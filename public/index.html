@@ -38,7 +38,7 @@ h1{font-family:var(--f-display);font-weight:700;font-size:clamp(30px,5vw,44px);l
 .ghost:hover{background:rgba(227,189,98,.12)}
 :focus-visible{outline:2px solid var(--gold-l);outline-offset:3px}
 
-.ask{background:linear-gradient(180deg,rgba(24,32,90,.72),rgba(12,18,48,.78));border:1px solid rgba(227,189,98,.35);border-radius:6px;padding:20px;display:grid;gap:14px;backdrop-filter:blur(3px)}
+.ask{background:linear-gradient(180deg,rgba(24,32,90,.72),rgba(12,18,48,.78));border:1px solid rgba(227,189,98,.35);border-radius:6px;padding:20px;display:grid;gap:14px}
 .ask label.q{font-family:var(--f-display);font-size:26px;font-weight:600;color:var(--gold-l)}
 .ask textarea{font:inherit;font-size:16px;color:var(--text);background:rgba(4,8,26,.6);border:1px solid rgba(227,189,98,.35);border-radius:4px;padding:12px 14px;resize:vertical;min-height:70px;width:100%}
 .ask textarea::placeholder{color:#8c8a80}
@@ -66,24 +66,26 @@ h1{font-family:var(--f-display);font-weight:700;font-size:clamp(30px,5vw,44px);l
 .qecho{margin:0;text-align:center;font-family:var(--f-display);font-style:italic;font-size:22px;color:var(--gold-l);max-width:40ch;text-wrap:balance}
 .qecho small{display:block;font-family:var(--f-body);font-style:normal;font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
 .stage{position:relative;width:min(100%,620px);aspect-ratio:1;--R:41%}
-.ring{position:absolute;inset:0;animation:spin 240s linear infinite}
+.ring{position:absolute;inset:0;animation:spin 240s linear infinite;will-change:transform;transition:opacity .6s}
 .ring.still{animation-play-state:paused}
 @keyframes spin{to{transform:rotate(360deg)}}
 .c{position:absolute;left:50%;top:50%;width:var(--cw);height:var(--ch);margin:calc(var(--ch)/-2) 0 0 calc(var(--cw)/-2);border-radius:4px;
-  background-image:var(--back);background-size:100% 100%;box-shadow:0 2px 6px rgba(0,0,0,.55);border:0;padding:0;cursor:default;
-  transform:var(--t);transition:transform .6s cubic-bezier(.3,.7,.2,1),opacity .5s ease,filter .3s}
-.c.ready{cursor:pointer}
-.c.ready:hover,.c.ready:focus-visible{filter:brightness(1.25) drop-shadow(0 0 6px rgba(246,220,151,.8))}
+  background-image:var(--back);background-size:100% 100%;border:0;padding:0;cursor:default;
+  transform:var(--t);transition:transform .6s cubic-bezier(.3,.7,.2,1),opacity .5s ease}
+.c.ready{cursor:pointer;will-change:transform}
+.c.ready:hover,.c.ready:focus-visible{outline:2px solid rgba(246,220,151,.9);outline-offset:1px}
 .c.taken{opacity:0;pointer-events:none}
-.ring.dim .c{opacity:.22}
+.ring.dim{opacity:.25}
 .altar{position:absolute;left:50%;top:50%;width:46%;transform:translate(-50%,-47%);pointer-events:none}
+.altar svg{position:relative}
 .altar svg{display:block;width:100%;height:auto;overflow:visible}
-.orb{transform-origin:100px 72px;transform-box:view-box;animation:glow 5s ease-in-out infinite}
-@keyframes glow{50%{filter:brightness(1.18)}}
+.orb{transform-origin:100px 72px;transform-box:view-box}
 .altar.breathe .orb{animation:breath 10s ease-in-out forwards}
-@keyframes breath{0%{transform:scale(1);filter:brightness(1)}40%{transform:scale(1.32);filter:brightness(1.55)}60%{transform:scale(1.32);filter:brightness(1.55)}100%{transform:scale(1);filter:brightness(1.1)}}
-.halo{transform-origin:100px 72px;transform-box:view-box;opacity:.55;animation:halo 6s ease-in-out infinite}
-@keyframes halo{50%{opacity:.9;transform:scale(1.08)}}
+@keyframes breath{0%{transform:scale(1)}40%{transform:scale(1.32)}60%{transform:scale(1.32)}100%{transform:scale(1)}}
+.altar .glowb{position:absolute;left:50%;top:26.6%;width:90%;aspect-ratio:1;transform:translate(-50%,-50%) scale(.6);border-radius:50%;background:radial-gradient(circle,rgba(255,244,200,.85) 0,rgba(246,220,151,.35) 35%,rgba(246,220,151,0) 68%);opacity:0;will-change:transform,opacity}
+.altar.breathe .glowb{animation:glowb 10s ease-in-out forwards}
+@keyframes glowb{0%{opacity:0;transform:translate(-50%,-50%) scale(.6)}40%,60%{opacity:1;transform:translate(-50%,-50%) scale(1.05)}100%{opacity:.25;transform:translate(-50%,-50%) scale(.7)}}
+.halo{opacity:.7}
 .breath{text-align:center;margin-top:-6px}
 .b-label{font-family:var(--f-display);font-size:clamp(24px,4vw,32px);font-weight:600;color:var(--gold-l);transition:opacity .4s}
 .b-count{font-family:var(--f-display);font-size:clamp(15px,2.6vw,19px);color:var(--muted);font-variant-numeric:tabular-nums}
@@ -167,7 +169,7 @@ dialog::backdrop{background:rgba(3,5,16,.7)}
     <p class="qecho" id="qecho"></p>
     <div class="stage" id="stage">
       <div class="ring" id="ring"></div>
-      <div class="altar" id="altar">
+      <div class="altar" id="altar"><div class="glowb"></div>
         <svg viewBox="0 0 200 270" aria-hidden="true">
           <defs>
             <radialGradient id="orbG" cx="42%" cy="38%" r="65%"><stop offset="0" stop-color="#fffbe9"/><stop offset=".35" stop-color="#f6dc97"/><stop offset=".75" stop-color="#d4952e"/><stop offset="1" stop-color="#8a4d14"/></radialGradient>
@@ -268,6 +270,8 @@ ${stem('')}${stem('translate(200 0) scale(-1 1)')}
 
 const BACK_URL='url("data:image/svg+xml,'+encodeURIComponent(BACK_SVG)+'")';
 document.documentElement.style.setProperty('--back',BACK_URL);
+(function rasterBack(){const img=new Image();img.onload=()=>{try{const cv=document.createElement('canvas');cv.width=240;cv.height=408;const g=cv.getContext('2d');g.drawImage(img,0,0,240,408);
+  const png=cv.toDataURL('image/png');document.documentElement.style.setProperty('--back','url("'+png+'")');}catch(e){}};img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(BACK_SVG);})();
 
 function ankh(x,y,s,col){return `<g transform="translate(${x} ${y}) scale(${s})"><ellipse cx="0" cy="-22" rx="12" ry="16" fill="none" stroke="${col||GOLD}" stroke-width="7"/><rect x="-24" y="-7" width="48" height="8" fill="${col||GOLD}"/><rect x="-4" y="-7" width="8" height="52" fill="${col||GOLD}"/></g>`;}
 function star5(x,y,r,col){let d='';for(let i=0;i<10;i++){const a=-Math.PI/2+i*Math.PI/5,rr=i%2?r*.38:r;d+=(i?'L':'M')+(x+Math.cos(a)*rr).toFixed(1)+' '+(y+Math.sin(a)*rr).toFixed(1);}return `<path d="${d}Z" fill="${col}"/>`;}
