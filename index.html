@@ -1,0 +1,522 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Kemet Tarot</title>
+<meta name="description" content="Bói bài tarot 78 lá theo phong cách Ai Cập cổ. Đặt câu hỏi, bốc 3 lá, hít thở 10 giây rồi nghe lời luận.">
+<meta property="og:title" content="Kemet Tarot">
+<meta property="og:description" content="Đặt câu hỏi, bốc 3 lá dưới ánh sao sông Nile.">
+<meta name="theme-color" content="#0c1230">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%230c1230'/%3E%3Cellipse cx='32' cy='19' rx='8' ry='10' fill='none' stroke='%23e9c56b' stroke-width='5'/%3E%3Crect x='16' y='29' width='32' height='6' fill='%23e9c56b'/%3E%3Crect x='29' y='29' width='6' height='26' fill='%23e9c56b'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Be+Vietnam+Pro:wght@400;500;600&display=swap">
+<style>
+/* Layout: một ngôi đền ban đêm — bàn trải bài hình tròn ở giữa, quả cầu trên bệ đá là tâm điểm; câu hỏi phía trên, lời luận như cuộn giấy cói phía dưới */
+:root{
+  --night:#0c1230; --night2:#18205a; --lapis:#1f3f7a; --gold:#e3bd62; --gold-d:#b8892f; --gold-l:#f6dc97;
+  --papyrus:#f1e3bf; --papyrus-d:#e2cd9a; --ink:#2f2312; --sand:#cdb07a; --turq:#38b3a3; --carnelian:#b9472f;
+  --text:#efe6cf; --muted:#b9b3a0;
+  --f-display:'Cormorant Garamond', 'Times New Roman', Georgia, serif;
+  --f-body:'Be Vietnam Pro', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{background:var(--night);color:var(--text);font-family:var(--f-body);font-size:16px;line-height:1.6;overflow-x:hidden}
+[hidden]{display:none!important}
+#sky{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+.dunes{position:fixed;left:0;right:0;bottom:0;width:100%;height:22vh;z-index:0;pointer-events:none;opacity:.9}
+.app{position:relative;z-index:1;max-width:980px;margin:0 auto;padding-block:22px 40px;padding-inline:16px;display:grid;gap:18px}
+.top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px}
+.brand{display:flex;align-items:center;gap:12px;min-width:0}
+.brand svg{flex:none;width:40px;height:40px}
+h1{font-family:var(--f-display);font-weight:700;font-size:clamp(30px,5vw,44px);letter-spacing:.08em;line-height:1;margin:0;color:var(--gold-l);text-transform:uppercase}
+.sub{margin:4px 0 0;color:var(--muted);font-size:14px;letter-spacing:.02em}
+.ghost{font:inherit;font-size:14px;font-weight:500;color:var(--gold-l);background:rgba(12,18,48,.5);border:1px solid rgba(227,189,98,.45);border-radius:999px;padding:7px 16px;cursor:pointer}
+.ghost:hover{background:rgba(227,189,98,.12)}
+:focus-visible{outline:2px solid var(--gold-l);outline-offset:3px}
+
+.ask{background:linear-gradient(180deg,rgba(24,32,90,.72),rgba(12,18,48,.78));border:1px solid rgba(227,189,98,.35);border-radius:6px;padding:20px;display:grid;gap:14px;backdrop-filter:blur(3px)}
+.ask label.q{font-family:var(--f-display);font-size:26px;font-weight:600;color:var(--gold-l)}
+.ask textarea{font:inherit;font-size:16px;color:var(--text);background:rgba(4,8,26,.6);border:1px solid rgba(227,189,98,.35);border-radius:4px;padding:12px 14px;resize:vertical;min-height:70px;width:100%}
+.ask textarea::placeholder{color:#8c8a80}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chips button{font:inherit;font-size:13px;color:var(--text);background:rgba(227,189,98,.08);border:1px solid rgba(227,189,98,.28);border-radius:999px;padding:5px 12px;cursor:pointer}
+.chips button:hover{background:rgba(227,189,98,.18)}
+.spreads{border:0;margin:0;padding:0;display:grid;gap:8px}
+.spreads legend{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+.sp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:8px}
+.sp{position:relative;display:block;cursor:pointer}
+.sp input{position:absolute;opacity:0;pointer-events:none}
+.sp span{display:grid;gap:2px;border:1px solid rgba(227,189,98,.28);border-radius:4px;padding:10px 12px;background:rgba(4,8,26,.4);height:100%}
+.sp b{font-family:var(--f-display);font-size:19px;font-weight:600;color:var(--text)}
+.sp small{font-size:12.5px;color:var(--muted)}
+.sp input:checked+span{border-color:var(--gold);background:rgba(227,189,98,.14);box-shadow:inset 0 0 0 1px var(--gold)}
+.sp input:focus-visible+span{outline:2px solid var(--gold-l);outline-offset:2px}
+.act{display:flex;flex-wrap:wrap;align-items:center;gap:12px 18px}
+.gold-btn{font-family:var(--f-display);font-size:21px;font-weight:700;letter-spacing:.06em;color:#20160a;background:linear-gradient(180deg,var(--gold-l),var(--gold) 55%,var(--gold-d));border:0;border-radius:4px;padding:10px 28px;cursor:pointer;box-shadow:0 0 0 1px #7a5a1c inset,0 8px 24px -10px rgba(227,189,98,.7)}
+.gold-btn:hover{filter:brightness(1.07)}
+.gold-btn:disabled{opacity:.5;cursor:default}
+.note{margin:0;font-size:12.5px;color:var(--muted)}
+.err{color:#f0a48f;font-size:14px;margin:0}
+
+.table{display:grid;gap:12px;justify-items:center}
+.qecho{margin:0;text-align:center;font-family:var(--f-display);font-style:italic;font-size:22px;color:var(--gold-l);max-width:40ch;text-wrap:balance}
+.qecho small{display:block;font-family:var(--f-body);font-style:normal;font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
+.stage{position:relative;width:min(100%,620px);aspect-ratio:1;--R:41%}
+.ring{position:absolute;inset:0;animation:spin 240s linear infinite}
+.ring.still{animation-play-state:paused}
+@keyframes spin{to{transform:rotate(360deg)}}
+.c{position:absolute;left:50%;top:50%;width:var(--cw);height:var(--ch);margin:calc(var(--ch)/-2) 0 0 calc(var(--cw)/-2);border-radius:4px;
+  background-image:var(--back);background-size:100% 100%;box-shadow:0 2px 6px rgba(0,0,0,.55);border:0;padding:0;cursor:default;
+  transform:var(--t);transition:transform .6s cubic-bezier(.3,.7,.2,1),opacity .5s ease,filter .3s}
+.c.ready{cursor:pointer}
+.c.ready:hover,.c.ready:focus-visible{filter:brightness(1.25) drop-shadow(0 0 6px rgba(246,220,151,.8))}
+.c.taken{opacity:0;pointer-events:none}
+.ring.dim .c{opacity:.22}
+.altar{position:absolute;left:50%;top:50%;width:46%;transform:translate(-50%,-47%);pointer-events:none}
+.altar svg{display:block;width:100%;height:auto;overflow:visible}
+.orb{transform-origin:100px 72px;transform-box:view-box;animation:glow 5s ease-in-out infinite}
+@keyframes glow{50%{filter:brightness(1.18)}}
+.altar.breathe .orb{animation:breath 10s ease-in-out forwards}
+@keyframes breath{0%{transform:scale(1);filter:brightness(1)}40%{transform:scale(1.32);filter:brightness(1.55)}60%{transform:scale(1.32);filter:brightness(1.55)}100%{transform:scale(1);filter:brightness(1.1)}}
+.halo{transform-origin:100px 72px;transform-box:view-box;opacity:.55;animation:halo 6s ease-in-out infinite}
+@keyframes halo{50%{opacity:.9;transform:scale(1.08)}}
+.breath{text-align:center;margin-top:-6px}
+.b-label{font-family:var(--f-display);font-size:clamp(24px,4vw,32px);font-weight:600;color:var(--gold-l);transition:opacity .4s}
+.b-count{font-family:var(--f-display);font-size:clamp(15px,2.6vw,19px);color:var(--muted);font-variant-numeric:tabular-nums}
+.hint{margin:0;text-align:center;color:var(--muted);font-size:14.5px;min-height:1.6em}
+.hint b{color:var(--gold-l);font-weight:600}
+
+.slots{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(10px,3vw,28px);width:min(100%,560px)}
+.slot{display:grid;justify-items:center;gap:8px;min-width:0}
+.slot .lbl{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--gold);text-align:center;min-height:2.7em;display:flex;align-items:flex-end;justify-content:center;line-height:1.35}
+.well{width:100%;max-width:150px;aspect-ratio:200/340;border:1px dashed rgba(227,189,98,.4);border-radius:6px;position:relative;perspective:900px}
+.card3d{position:absolute;inset:0;transform-style:preserve-3d;transition:transform 1s cubic-bezier(.3,.7,.2,1)}
+.card3d.open{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:6px;overflow:hidden;box-shadow:0 10px 26px -10px rgba(0,0,0,.8)}
+.face.back{background-image:var(--back);background-size:100% 100%}
+.face.front{transform:rotateY(180deg)}
+.face.front svg{display:block;width:100%;height:100%}
+.face.front.rev svg{transform:rotate(180deg)}
+.slot .nm{font-family:var(--f-display);font-size:19px;font-weight:600;color:var(--text);text-align:center;line-height:1.15;min-height:1.2em}
+.slot .meta{font-size:12px;color:var(--muted);text-align:center;margin-top:-6px}
+.slot .meta .r{color:#f0a48f}
+
+.reading{width:min(100%,720px);background:linear-gradient(180deg,var(--papyrus),var(--papyrus-d));color:var(--ink);border-radius:4px;padding:26px clamp(18px,4vw,36px);position:relative;box-shadow:0 20px 50px -20px rgba(0,0,0,.8)}
+.reading::before,.reading::after{content:"";position:absolute;left:-8px;right:-8px;height:14px;border-radius:7px;background:linear-gradient(180deg,#a8823f,#6e5222)}
+.reading::before{top:-7px}.reading::after{bottom:-7px}
+.reading h2{font-family:var(--f-display);font-size:30px;font-weight:700;margin:0 0 4px;color:#5a2a12;letter-spacing:.03em}
+.reading .src{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:#7b6640;margin:0 0 14px}
+.reading h3{font-family:var(--f-display);font-size:22px;font-weight:700;margin:18px 0 4px;color:#1f3f7a}
+.reading p{margin:0 0 8px;max-width:65ch}
+.reading .wait{font-style:italic;color:#7b6640}
+.reading .cursor{display:inline-block;width:.5em;height:1em;background:#b9472f;vertical-align:-2px;margin-left:2px;animation:blink 1s steps(2) infinite}
+@keyframes blink{50%{opacity:0}}
+.reading .fb{font-size:13px;color:#7b4a2a;background:rgba(185,71,47,.08);border-left:3px solid #b9472f;padding:6px 10px;margin:0 0 12px}
+.after{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:14px}
+.after .ghost{color:#3a2a14;border-color:#a8823f;background:transparent}
+footer{text-align:center;font-size:12.5px;color:var(--muted);margin-top:10px;text-wrap:balance}
+
+dialog{border:1px solid rgba(227,189,98,.5);border-radius:6px;padding:0;background:#121a44;color:var(--text);width:min(560px,calc(100% - 32px));max-height:calc(100% - 48px)}
+dialog::backdrop{background:rgba(3,5,16,.7)}
+.dlg{padding:20px 22px;display:grid;gap:10px}
+.dlg h2{font-family:var(--f-display);font-size:28px;margin:0;color:var(--gold-l)}
+.dlg ol{margin:0;padding-left:20px;display:grid;gap:8px}
+.dlg p{margin:0}
+.dlg .x{justify-self:end}
+@media (max-width:520px){.ask{padding:16px}.slot .nm{font-size:16px}.qecho{font-size:19px}}
+@media (prefers-reduced-motion:reduce){.ring{animation:none}.c{transition-duration:.01s}.card3d{transition-duration:.3s}.orb,.halo{animation:none}}
+</style>
+</head>
+<body>
+<canvas id="sky" aria-hidden="true"></canvas>
+<svg class="dunes" viewBox="0 0 1200 220" preserveAspectRatio="none" aria-hidden="true">
+  <defs><linearGradient id="dn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a2340"/><stop offset="1" stop-color="#0b0d22"/></linearGradient></defs>
+  <path d="M120 160 L260 40 L400 160Z M330 160 L420 82 L510 160Z M900 160 L990 70 L1080 160Z" fill="#1d1a38" opacity=".9"/>
+  <path d="M0 150 Q200 110 420 150 T840 140 T1200 135 V220 H0Z" fill="url(#dn)"/>
+</svg>
+
+<main class="app">
+  <header class="top">
+    <div class="brand">
+      <svg viewBox="0 0 64 64" aria-hidden="true"><ellipse cx="32" cy="17" rx="9" ry="12" fill="none" stroke="#e3bd62" stroke-width="5"/><rect x="14" y="29" width="36" height="6" fill="#e3bd62"/><rect x="29" y="29" width="6" height="30" fill="#e3bd62"/></svg>
+      <div><h1>Kemet Tarot</h1><p class="sub">Bộ bài 78 lá dưới ánh sao sông Nile</p></div>
+    </div>
+    <button class="ghost" id="helpBtn" type="button">Cách xem bài</button>
+  </header>
+
+  <section class="ask" id="ask">
+    <label class="q" for="q">Bạn muốn hỏi điều gì?</label>
+    <textarea id="q" maxlength="300" rows="2" placeholder="Ví dụ: Công việc của tôi trong ba tháng tới sẽ ra sao?"></textarea>
+    <div class="chips" id="chips" aria-label="Gợi ý câu hỏi"></div>
+    <fieldset class="spreads">
+      <legend>Chọn cách trải 3 lá</legend>
+      <div class="sp-grid" id="spreads"></div>
+    </fieldset>
+    <div class="act">
+      <button class="gold-btn" id="shuffleBtn" type="button">Xáo bài</button>
+      <p class="note">Câu hỏi và 3 lá bài được gửi tới AI để luận. Trang không lưu lại câu hỏi của bạn.</p>
+    </div>
+    <p class="err" id="askErr" role="alert" hidden></p>
+  </section>
+
+  <section class="table" id="table" hidden>
+    <p class="qecho" id="qecho"></p>
+    <div class="stage" id="stage">
+      <div class="ring" id="ring"></div>
+      <div class="altar" id="altar">
+        <svg viewBox="0 0 200 270" aria-hidden="true">
+          <defs>
+            <radialGradient id="orbG" cx="42%" cy="38%" r="65%"><stop offset="0" stop-color="#fffbe9"/><stop offset=".35" stop-color="#f6dc97"/><stop offset=".75" stop-color="#d4952e"/><stop offset="1" stop-color="#8a4d14"/></radialGradient>
+            <radialGradient id="haloG"><stop offset=".45" stop-color="rgba(246,220,151,.55)"/><stop offset="1" stop-color="rgba(246,220,151,0)"/></radialGradient>
+            <linearGradient id="stone" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#7d6a49"/><stop offset=".45" stop-color="#d3bf93"/><stop offset="1" stop-color="#6f5d3e"/></linearGradient>
+            <linearGradient id="stone2" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#6c5b3d"/><stop offset=".5" stop-color="#bba67a"/><stop offset="1" stop-color="#5f4f35"/></linearGradient>
+          </defs>
+          <circle class="halo" cx="100" cy="72" r="78" fill="url(#haloG)"/>
+          <!-- bệ đá -->
+          <path d="M58 122 Q100 108 142 122 L134 138 L66 138Z" fill="url(#stone)"/>
+          <path d="M66 138 L134 138 L128 146 L72 146Z" fill="#5e4e33"/>
+          <rect x="74" y="146" width="52" height="86" fill="url(#stone)"/>
+          <g fill="none" stroke="#5a4a30" stroke-width="1.6" stroke-linecap="round" opacity=".85">
+            <ellipse cx="100" cy="160" rx="5" ry="6"/><path d="M92 168h16M100 168v12"/>
+            <path d="M88 192q6-6 12 0t12 0M88 198q6-6 12 0t12 0"/>
+            <path d="M94 212q6-8 12 0q-6 6-12 0z"/><circle cx="100" cy="212" r="1.6"/>
+            <path d="M100 220v8M96 224h8"/>
+          </g>
+          <path d="M66 232 L134 232 L142 244 L58 244Z" fill="url(#stone2)"/>
+          <path d="M48 244 L152 244 L160 258 L40 258Z" fill="url(#stone)"/>
+          <!-- quả cầu -->
+          <g class="orb">
+            <circle cx="100" cy="72" r="44" fill="url(#orbG)"/>
+            <path d="M70 70 Q86 50 104 62 T130 66" fill="none" stroke="rgba(255,255,255,.45)" stroke-width="2"/>
+            <path d="M74 86 Q92 72 108 82 T128 84" fill="none" stroke="rgba(255,240,200,.35)" stroke-width="1.5"/>
+            <ellipse cx="86" cy="56" rx="10" ry="6" fill="rgba(255,255,255,.55)" transform="rotate(-30 86 56)"/>
+          </g>
+        </svg>
+      </div>
+    </div>
+    <div class="breath" id="breath" hidden><div class="b-label" id="bLabel">Hít vào</div><div class="b-count" id="bCount">10</div></div>
+    <p class="hint" id="hint" aria-live="polite"></p>
+    <div class="slots" id="slots"></div>
+    <section class="reading" id="reading" hidden aria-live="polite">
+      <h2>Lời luận bài</h2>
+      <p class="src" id="readSrc"></p>
+      <div id="readText"></div>
+      <div class="after"><button class="ghost" id="againBtn" type="button">Hỏi câu khác</button><button class="ghost" id="sameBtn" type="button">Trải lại câu này</button></div>
+    </section>
+  </section>
+
+  <footer>Tarot là công cụ để suy ngẫm và giải trí, không thay thế lời khuyên của bác sĩ, luật sư hay chuyên gia tài chính.</footer>
+</main>
+
+<dialog id="help" aria-labelledby="helpT">
+  <form method="dialog" class="dlg">
+    <h2 id="helpT">Cách xem bài</h2>
+    <ol>
+      <li><b>Đặt câu hỏi.</b> Hỏi cụ thể sẽ cho lời luận rõ hơn, ví dụ “Tôi nên làm gì để cải thiện mối quan hệ với đồng nghiệp?” thay vì “Tôi có may mắn không?”.</li>
+      <li><b>Chọn cách trải.</b> Mỗi kiểu trải gán ý nghĩa riêng cho 3 vị trí: Quá khứ – Hiện tại – Tương lai, Tình huống – Thử thách – Lời khuyên, Bạn – Người ấy – Mối quan hệ, hoặc Tâm trí – Cơ thể – Tinh thần.</li>
+      <li><b>Xáo và bốc.</b> Bấm Xáo bài. 78 lá được xáo ngẫu nhiên rồi trải thành vòng tròn quanh quả cầu. Hãy chạm vào 3 lá mà bạn thấy muốn chọn. Lá đầu tiên vào vị trí thứ nhất, và cứ thế.</li>
+      <li><b>Hít thở 10 giây.</b> Quả cầu sáng lên theo nhịp thở: hít vào 4 giây, giữ 2 giây, thở ra 4 giây. Hãy nghĩ về câu hỏi của bạn.</li>
+      <li><b>Lật bài và nghe luận.</b> Ba lá lật lần lượt. Lá có chữ “ngược” mang nghĩa ngược. Lời luận hiện dần trên cuộn giấy cói.</li>
+    </ol>
+    <p>Bộ bài là tarot 78 lá vẽ lại theo Ai Cập. Mỗi lá ghi tên tarot tiếng Anh, dòng nhỏ bên dưới là hình tượng Ai Cập: 22 lá Ẩn Chính gắn với các vị thần như The Sun là Ra, Death là Anubis; 56 lá Ẩn Phụ chia bốn chất: Wands là quyền trượng Was, Cups là chén sông Nile, Swords là kiếm khopesh, Pentacles là đĩa vàng.</p>
+    <p>Mỗi người được luận tối đa 6 lần trong 3 phút. Nếu máy luận AI bận, trang sẽ đưa ra bản luận rút gọn dựa trên ý nghĩa từng lá.</p>
+    <button class="ghost x" value="close">Đã hiểu</button>
+  </form>
+</dialog>
+
+<script>
+(() => {
+'use strict';
+const DECK = [{"i":0,"a":"major","r":0,"num":"0","n":"Lữ Khách","e":"Kẻ du hành sa mạc","en":"The Fool","eg":"Desert Wanderer","up":"Khởi đầu mới, sự ngây thơ, tinh thần tự do, niềm tin, tiềm năng vô hạn, bước nhảy vọt vào điều chưa biết.","rv":"Liều lĩnh thiếu suy nghĩ, ngốc nghếch, sợ hãi bước đi, sự trì hoãn, thiếu tầm nhìn."},{"i":1,"a":"major","r":1,"num":"I","n":"Thoth","e":"Thần tri thức và chữ viết","en":"The Magician","eg":"Thoth","up":"Sự biểu hiện, ý chí mạnh mẽ, kỹ năng, tài năng, sự sáng tạo, quyền năng biến ý tưởng thành hiện thực.","rv":"Thao túng, lừa dối, tài năng chưa được khai thác, thiếu tập trung, ý chí yếu kém."},{"i":2,"a":"major","r":2,"num":"II","n":"Isis","e":"Nữ thần của bí ẩn","en":"The High Priestess","eg":"Isis","up":"Trực giác, sự thông thái tiềm ẩn, bí mật, thế giới vô thức, sự tĩnh lặng, nữ tính thiêng liêng.","rv":"Bỏ qua trực giác, giữ bí mật độc hại, sự nông cạn, bị che mắt trước sự thật."},{"i":3,"a":"major","r":3,"num":"III","n":"Hathor","e":"Nữ thần tình yêu và sung túc","en":"The Empress","eg":"Hathor","up":"Sự dồi dào, lòng trắc ẩn, tính mẫu tử, sự sáng tạo, thiên nhiên, sự nuôi dưỡng và sung túc.","rv":"Sự phụ thuộc, ngột ngạt, thiếu chăm sóc bản thân, trì trệ trong sáng tạo, ích kỷ."},{"i":4,"a":"major","r":4,"num":"IV","n":"Pharaoh","e":"Người trị vì hai miền đất","en":"The Emperor","eg":"Pharaoh","up":"Quyền lực, cấu trúc, sự ổn định, khả năng lãnh đạo, tính kỷ luật, sự kiểm soát và bảo vệ.","rv":"Lạm dụng quyền lực, độc đoán, cứng nhắc, thiếu kiểm soát, yếu kém trong quản lý."},{"i":5,"a":"major","r":5,"num":"V","n":"Amun","e":"Đại tư tế của đền Karnak","en":"The Hierophant","eg":"Amun","up":"Niềm tin tôn giáo, truyền thống, sự hướng dẫn tinh thần, cấu trúc xã hội, học tập bài học đạo đức.","rv":"Phá vỡ truyền thống, nổi loạn, giáo điều lỗi thời, đi theo lối mòn mù quáng."},{"i":6,"a":"major","r":6,"num":"VI","n":"Isis và Osiris","e":"Đôi tình nhân bất tử","en":"The Lovers","eg":"Isis & Osiris","up":"Tình yêu, sự hòa hợp, các mối quan hệ sâu sắc, sự lựa chọn quan trọng dựa trên giá trị cốt lõi.","rv":"Sự bất hòa, mất kết nối, lựa chọn sai lầm, mâu thuẫn nội tâm, thiếu cam kết."},{"i":7,"a":"major","r":7,"num":"VII","n":"Chiến Xa","e":"Cỗ xe của Pharaoh","en":"The Chariot","eg":"Pharaoh's Chariot","up":"Ý chí sắt đá, sự quyết tâm, chiến thắng qua kỷ luật, sự kiểm soát cảm xúc, hành trình tiến về phía trước.","rv":"Mất kiểm soát, hướng đi sai lệch, hung hăng, bỏ cuộc giữa chừng, thất bại do thiếu kiên nhẫn."},{"i":8,"a":"major","r":8,"num":"VIII","n":"Sekhmet","e":"Nữ thần sư tử","en":"Strength","eg":"Sekhmet","up":"Sức mạnh nội tâm, lòng dũng cảm, sự kiên nhẫn, lòng trắc ẩn, khả năng chế ngự bản năng bằng sự mềm mỏng.","rv":"Tự ti, nghi ngờ bản thân, mất kiểm soát cảm xúc, yếu đuối, bạo lực ngầm."},{"i":9,"a":"major","r":9,"num":"IX","n":"Imhotep","e":"Nhà hiền triết xây kim tự tháp","en":"The Hermit","eg":"Imhotep","up":"Sự chiêm nghiệm nội tâm, tìm kiếm chân lý, sự cô độc mang tính chữa lành, người dẫn đường nội tâm.","rv":"Sự cô lập độc hại, cô đơn kéo dài, từ chối lời khuyên, lạc lối trong suy nghĩ."},{"i":10,"a":"major","r":10,"num":"X","n":"Bánh Xe Shai","e":"Vị thần của số phận","en":"Wheel of Fortune","eg":"Wheel of Shai","up":"Vòng quay vận mệnh, sự thay đổi, cơ hội, định mệnh, chu kỳ mới, sự thăng trầm của cuộc sống.","rv":"Vận rủi tạm thời, kháng cự lại sự thay đổi, chu kỳ tiêu cực lặp lại, mất kiểm soát."},{"i":11,"a":"major","r":11,"num":"XI","n":"Ma'at","e":"Nữ thần của sự thật","en":"Justice","eg":"Ma'at","up":"Công lý, sự công bằng, nhân quả, trách nhiệm pháp lý, tính khách quan, sự thật phơi bày.","rv":"Bất công, thiếu trách nhiệm, lẩn tránh hậu quả, phán xét thiên vị, sai lầm pháp lý."},{"i":12,"a":"major","r":12,"num":"XII","n":"Người Treo","e":"Cột Djed đảo ngược","en":"The Hanged Man","eg":"Inverted Djed","up":"Sự buông bỏ, góc nhìn mới, sự hy sinh có ý nghĩa, trạng thái tạm dừng, sự giác ngộ qua tĩnh lặng.","rv":"Sự trì trệ vô nghĩa, cố chấp, hy sinh không đúng chỗ, cảm giác như đang bị kẹt."},{"i":13,"a":"major","r":13,"num":"XIII","n":"Anubis","e":"Người dẫn đường qua cõi chết","en":"Death","eg":"Anubis","up":"Sự chuyển hóa sâu sắc, kết thúc một chu kỳ để mở ra cái mới, sự tái sinh, buông bỏ cái cũ.","rv":"Sợ thay đổi, níu kéo quá khứ, trì hoãn sự kết thúc tất yếu, sự bế tắc kéo dài."},{"i":14,"a":"major","r":14,"num":"XIV","n":"Hapi","e":"Thần lũ sông Nile","en":"Temperance","eg":"Hapi","up":"Sự cân bằng, điều độ, tính kiên nhẫn, sự hòa hợp, quá trình dung hòa các mặt đối lập, chữa lành.","rv":"Sự mất cân bằng, thái cực đoan, thiếu kiên nhẫn, xung đột lợi ích, bất hòa."},{"i":15,"a":"major","r":15,"num":"XV","n":"Set","e":"Thần của hỗn loạn","en":"The Devil","eg":"Set","up":"Sự trói buộc, phụ thuộc độc hại, cám dỗ vật chất, cái tôi ích kỷ, cảm giác bất lực trước hoàn cảnh.","rv":"Sự giải thoát khỏi ràng buộc, vượt qua cám dỗ, nhận thức được cái bẫy tâm lý, tự chủ."},{"i":16,"a":"major","r":16,"num":"XVI","n":"Tháp Apep","e":"Con rắn hỗn mang","en":"The Tower","eg":"Tower of Apep","up":"Sự sụp đổ bất ngờ của cấu trúc cũ, cú sốc thức tỉnh, sự giải phóng hỗn loạn để tái thiết lập chân lý.","rv":"Tránh được tai họa trong gang tấc, sự sụp đổ bị trì hoãn, sợ hãi đối mặt với khủng hoảng."},{"i":17,"a":"major","r":17,"num":"XVII","n":"Sopdet","e":"Ngôi sao báo lũ","en":"The Star","eg":"Sopdet","up":"Niềm tin, sự hy vọng, nguồn cảm hứng, sự bình yên trong tâm hồn, ơn huệ và sự chữa lành từ vũ trụ.","rv":"Mất niềm tin, tuyệt vọng, thiếu động lực, tự ti, cảm giác mờ mịt về tương lai."},{"i":18,"a":"major","r":18,"num":"XVIII","n":"Khonsu","e":"Thần mặt trăng","en":"The Moon","eg":"Khonsu","up":"Ảo ảnh, sự lo âu, nỗi sợ vô hình, thế giới tiềm thức, trực giác mơ hồ, những điều chưa được tỏ tường.","rv":"Sự thật dần hé lộ, vượt qua nỗi sợ, giải tỏa lo âu, làm sáng tỏ những hiểu lầm."},{"i":19,"a":"major","r":19,"num":"XIX","n":"Ra","e":"Thần mặt trời","en":"The Sun","eg":"Ra","up":"Niềm vui, sự thành công rực rỡ, năng lượng tích cực, sự sống dồi dào, tính minh bạch và sự rõ ràng.","rv":"Thành công bị trì hoãn, niềm vui gượng gạo, tự mãn, thiếu sự tự tin bên trong."},{"i":20,"a":"major","r":20,"num":"XX","n":"Cân Tim","e":"Phán xét của Osiris","en":"Judgement","eg":"Weighing of the Heart","up":"Sự thức tỉnh tâm linh, đánh giá lại bản thân, tiếng gọi từ định mệnh, sự tha thứ và chuyển hóa cuối cùng.","rv":"Sự tự phán xét khắc nghiệt, từ chối nhìn nhận sai lầm, nghi ngờ bản thân, bỏ lỡ cơ hội."},{"i":21,"a":"major","r":21,"num":"XXI","n":"Nut","e":"Nữ thần bầu trời","en":"The World","eg":"Nut","up":"Sự hoàn thành một chu kỳ lớn, thành tựu trọn vẹn, sự hợp nhất, sự viên mãn và bình an nội tại.","rv":"Thiếu sự kết thúc trọn vẹn, cảm giác dang dở, trì trệ ở chặng nước rút, mục tiêu chưa đạt được."},{"i":22,"a":"wands","r":1,"num":"1","n":"Át Quyền Trượng","e":"Lửa: hành động, năng lượng, đam mê, sự sáng tạo, ý chí, khát vọng và sự nghiệp","en":"Ace of Wands","eg":"Was Scepter","up":"Cơ hội hành động mới, bùng nổ năng lượng, nguồn cảm hứng sáng tạo mạnh mẽ.","rv":"Thiếu năng lượng, trì hoãn, mất phương hướng."},{"i":23,"a":"wands","r":2,"num":"2","n":"Hai Quyền Trượng","e":"Lửa: hành động, năng lượng, đam mê, sự sáng tạo, ý chí, khát vọng và sự nghiệp","en":"Two of Wands","eg":"Was Scepter","up":"Lên kế hoạch tương lai, sự lựa chọn hướng đi, tầm nhìn chiến lược, sự chuẩn bị xuất phát.","rv":"Sợ hãi rủi ro, kế hoạch đổ vỡ, thiếu quyết đoán."},{"i":24,"a":"wands","r":3,"num":"3","n":"Ba Quyền Trượng","e":"Lửa: hành động, năng lượng, đam mê, sự sáng tạo, ý chí, khát vọng và sự nghiệp","en":"Three of Wands","eg":"Was Scepter","up":"Sự mở rộng, bước đầu gặt hái thành quả, chờ đợi kết quả từ những nỗ lực đã đầu tư, viễn cảnh xa.","rv":"Trì hoãn, gián đoạn trong vận chuyển hoặc kế hoạch, thất vọng."},{"i":25,"a":"wands","r":4,"num":"4","n":"Bốn Quyền Trượng","e":"Lửa: hành động, năng lượng, đam mê, sự sáng tạo, ý chí, khát vọng và sự nghiệp","en":"Four of Wands","eg":"Was Scepter","up":"Sự kỷ niệm, lễ hội, mái ấm bình yên, hòa hợp gia đình, cột mốc thành công tạm thời.","rv":"Mâu thuẫn gia đình, sự bất ổn tạm thời, kế hoạch tiệc tùng bị hủy."},{"i":26,"a":"wands","r":5,"num":"5","n":"Năm Quyền Trượng","e":"Lửa: hành động, năng lượng, đam mê, sự sáng tạo, ý chí, khát vọng và sự nghiệp","en":"Five of Wands","eg":"Was Scepter","up":"Cạnh tranh, xung đột lợi ích, bất đồng quan điểm, thử thách hỗn loạn trong nhóm.","rv":"Tránh né xung đột, tìm được tiếng nói chung, thỏa hiệp."},{"i":27,"a":"wands","r":6,"num":"6","n":"Sáu Quyền Trượng","e":"Lửa: hành động, năng lượng, đam mê, sự sáng tạo, ý chí, khát vọng và sự nghiệp","en":"Six of Wands","eg":"Was Scepter","up":"Chiến thắng, sự công nhận, niềm tự hào, vượt qua khó khăn để nhận vinh quang.","rv":"Kiêu ngạo, thiếu sự công nhận, chiến thắng tạm bợ, tự ti."},{"i":28,"a":"wands","r":7,"num":"7","n":"Bảy Quyền Trượng","e":"Lửa: hành động, năng lượng, đam mê, sự sáng tạo, ý chí, khát vọng và sự nghiệp","en":"Seven of Wands","eg":"Was Scepter","up":"Sự phòng thủ, bảo vệ quan điểm hoặc lợi ích trước các thế lực đối đầu, kiên định.","rv":"Kiệt sức vì chống đối, đầu hàng, cảm giác bị cô lập và tấn công."},{"i":29,"a":"wands","r":8,"num":"8","n":"Tám Quyền Trượng","e":"Lửa: hành động, năng lượng, đam mê, sự sáng tạo, ý chí, khát vọng và sự nghiệp","en":"Eight of Wands","eg":"Was Scepter","up":"Tốc độ cao, tin tức dồn dập, sự kiện diễn ra nhanh chóng, thay đổi đột ngột.","rv":"Sự trì trệ, chậm trễ, thông tin sai lệch, hỗn loạn."},{"i":30,"a":"wands","r":9,"num":"9","n":"Chín Quyền Trượng","e":"Lửa: hành động, năng lượng, đam mê, sự sáng tạo, ý chí, khát vọng và sự nghiệp","en":"Nine of Wands","eg":"Was Scepter","up":"Sự kiên cường phút chót, mệt mỏi nhưng vẫn cảnh giác bảo vệ thành quả cuối cùng.","rv":"Kiệt quệ năng lượng, quá đa nghi, bỏ cuộc ngay trước đích."},{"i":31,"a":"wands","r":10,"num":"10","n":"Mười Quyền Trượng","e":"Lửa: hành động, năng lượng, đam mê, sự sáng tạo, ý chí, khát vọng và sự nghiệp","en":"Ten of Wands","eg":"Was Scepter","up":"Gánh nặng quá tải, ôm đồm nhiều việc, áp lực trách nhiệm đè nặng lên vai.","rv":"Biết buông bỏ bớt gánh nặng, chia sẻ trách nhiệm, giải tỏa áp lực."},{"i":32,"a":"wands","r":11,"num":"","n":"Thị Đồng Quyền Trượng","e":"Lửa: hành động, năng lượng, đam mê, sự sáng tạo, ý chí, khát vọng và sự nghiệp","en":"Page of Wands","eg":"Was Scepter","up":"Sứ giả nhiệt huyết, tinh thần phiêu lưu, ham học hỏi, ý tưởng mới mẻ nhưng thiếu thực tế.","rv":"Thiếu tập trung, xốc nổi, hứa suông, nản lòng nhanh."},{"i":33,"a":"wands","r":12,"num":"","n":"Chiến Binh Quyền Trượng","e":"Lửa: hành động, năng lượng, đam mê, sự sáng tạo, ý chí, khát vọng và sự nghiệp","en":"Knight of Wands","eg":"Was Scepter","up":"Hành động bốc đồng, đam mê cháy bỏng, tốc độ, sự xông pha bất chấp rủi ro.","rv":"Hấp tấp, hung hăng, thiếu kiên nhẫn, năng lượng tiêu hao vô ích."},{"i":34,"a":"wands","r":13,"num":"","n":"Nữ Hoàng Quyền Trượng","e":"Lửa: hành động, năng lượng, đam mê, sự sáng tạo, ý chí, khát vọng và sự nghiệp","en":"Queen of Wands","eg":"Was Scepter","up":"Sự tự tin, cuốn hút, độc lập, ấm áp, có tầm nhìn lãnh đạo và năng lượng tích cực cao.","rv":"Ghen tuông, độc đoán, mất tự tin, thao túng người khác."},{"i":35,"a":"wands","r":14,"num":"","n":"Vua Quyền Trượng","e":"Lửa: hành động, năng lượng, đam mê, sự sáng tạo, ý chí, khát vọng và sự nghiệp","en":"King of Wands","eg":"Was Scepter","up":"Người lãnh đạo tầm nhìn, sáng tạo, truyền cảm hứng, quyết đoán và có trách nhiệm lớn.","rv":"Độc tài, nóng nảy, áp đặt ý kiến, thiếu kiên nhẫn."},{"i":36,"a":"cups","r":1,"num":"1","n":"Át Bình Nile","e":"Nước: cảm xúc, tình yêu, trực giác, các mối quan hệ, tâm hồn và sự kết nối","en":"Ace of Cups","eg":"Nile Chalice","up":"Tình yêu mới mẻ, cảm xúc dâng trào, sự chữa lành tâm hồn, lòng trắc ẩn sâu sắc.","rv":"Cảm xúc chai sạn, tổn thương tình cảm, tự cô lập cảm xúc."},{"i":37,"a":"cups","r":2,"num":"2","n":"Hai Bình Nile","e":"Nước: cảm xúc, tình yêu, trực giác, các mối quan hệ, tâm hồn và sự kết nối","en":"Two of Cups","eg":"Nile Chalice","up":"Sự gắn kết đôi lứa, tình bạn đẹp, mối quan hệ đối tác hài hòa, sự thấu hiểu lẫn nhau.","rv":"Bất hòa, mất kết nối, chia rẽ trong mối quan hệ, hiểu lầm."},{"i":38,"a":"cups","r":3,"num":"3","n":"Ba Bình Nile","e":"Nước: cảm xúc, tình yêu, trực giác, các mối quan hệ, tâm hồn và sự kết nối","en":"Three of Cups","eg":"Nile Chalice","up":"Niềm vui bên hội nhóm, tiệc tùng, sự chia sẻ, tình bạn thân thiết, tinh thần tập thể.","rv":"Xích mích nhóm, chơi xấu sau lưng, chè chén quá độ, cô lập."},{"i":39,"a":"cups","r":4,"num":"4","n":"Bốn Bình Nile","e":"Nước: cảm xúc, tình yêu, trực giác, các mối quan hệ, tâm hồn và sự kết nối","en":"Four of Cups","eg":"Nile Chalice","up":"Sự chán nản, thờ ơ, bỏ lỡ cơ hội vì mải chìm đắm trong suy nghĩ tiêu cực hoặc sự bất mãn.","rv":"Thức tỉnh, cởi mở đón nhận cơ hội mới, chấm dứt sự chán chường."},{"i":40,"a":"cups","r":5,"num":"5","n":"Năm Bình Nile","e":"Nước: cảm xúc, tình yêu, trực giác, các mối quan hệ, tâm hồn và sự kết nối","en":"Five of Cups","eg":"Nile Chalice","up":"Sự tiếc nuối, nỗi buồn mất mát, tập trung vào những điều đã mất thay vì hiện tại.","rv":"Chấp nhận sự thật, chữa lành nỗi đau, hướng về phía trước."},{"i":41,"a":"cups","r":6,"num":"6","n":"Sáu Bình Nile","e":"Nước: cảm xúc, tình yêu, trực giác, các mối quan hệ, tâm hồn và sự kết nối","en":"Six of Cups","eg":"Nile Chalice","up":"Hoài niệm quá khứ, tuổi thơ, sự trong sáng, niềm vui bình dị, gặp lại người cũ hoặc bạn cũ.","rv":"Sống bám víu vào quá khứ, không chịu trưởng thành, vướng bận."},{"i":42,"a":"cups","r":7,"num":"7","n":"Bảy Bình Nile","e":"Nước: cảm xúc, tình yêu, trực giác, các mối quan hệ, tâm hồn và sự kết nối","en":"Seven of Cups","eg":"Nile Chalice","up":"Sự mơ mộng hảo huyền, nhiều lựa chọn gây hoang mang, ảo tưởng, thiếu thực tế.","rv":"Tỉnh mộng, đưa ra lựa chọn thực tế, tập trung vào mục tiêu duy nhất."},{"i":43,"a":"cups","r":8,"num":"8","n":"Tám Bình Nile","e":"Nước: cảm xúc, tình yêu, trực giác, các mối quan hệ, tâm hồn và sự kết nối","en":"Eight of Cups","eg":"Nile Chalice","up":"Sự rời bỏ một môi trường không còn phù hợp để đi tìm ý nghĩa sâu sắc hơn.","rv":"Sợ thay đổi, níu kéo tình huống độc hại, chần chừ không muốn rời đi."},{"i":44,"a":"cups","r":9,"num":"9","n":"Chín Bình Nile","e":"Nước: cảm xúc, tình yêu, trực giác, các mối quan hệ, tâm hồn và sự kết nối","en":"Nine of Cups","eg":"Nile Chalice","up":"Sự thỏa mãn, mãn nguyện, ước mơ thành hiện thực, niềm vui vật chất và tinh thần.","rv":"Tự mãn, ích kỷ, hạnh phúc bề ngoài nhưng trống rỗng bên trong."},{"i":45,"a":"cups","r":10,"num":"10","n":"Mười Bình Nile","e":"Nước: cảm xúc, tình yêu, trực giác, các mối quan hệ, tâm hồn và sự kết nối","en":"Ten of Cups","eg":"Nile Chalice","up":"Hạnh phúc viên mãn gia đình, sự bình yên trọn vẹn, tình yêu bền vững dài lâu.","rv":"Bất hòa gia đình, rạn nứt bề ngoài, thiếu sự thấu hiểu chung."},{"i":46,"a":"cups","r":11,"num":"","n":"Thị Đồng Bình Nile","e":"Nước: cảm xúc, tình yêu, trực giác, các mối quan hệ, tâm hồn và sự kết nối","en":"Page of Cups","eg":"Nile Chalice","up":"Tin vui tình cảm, sự nhạy cảm, thông điệp từ trực giác, tính nghệ sĩ và sự lãng mạn.","rv":"Quá nhạy cảm, dễ tủi thân, ảo tưởng tình cảm, non nớt."},{"i":47,"a":"cups","r":12,"num":"","n":"Chiến Binh Bình Nile","e":"Nước: cảm xúc, tình yêu, trực giác, các mối quan hệ, tâm hồn và sự kết nối","en":"Knight of Cups","eg":"Nile Chalice","up":"Lãng mạn, cầu hôn, người theo đuổi nghệ thuật hoặc tình yêu, lời mời gọi hấp dẫn.","rv":"Cảm xúc thất thường, hứa hẹn suông, kẻ lừa tình, thiếu thực tế."},{"i":48,"a":"cups","r":13,"num":"","n":"Nữ Hoàng Bình Nile","e":"Nước: cảm xúc, tình yêu, trực giác, các mối quan hệ, tâm hồn và sự kết nối","en":"Queen of Cups","eg":"Nile Chalice","up":"Sự thấu cảm sâu sắc, dịu dàng, trực giác nhạy bén, người chữa lành và lắng nghe tuyệt vời.","rv":"Quá phụ thuộc cảm xúc, dễ bị tổn thương, thao túng tâm lý bằng sự ủy mị."},{"i":49,"a":"cups","r":14,"num":"","n":"Vua Bình Nile","e":"Nước: cảm xúc, tình yêu, trực giác, các mối quan hệ, tâm hồn và sự kết nối","en":"King of Cups","eg":"Nile Chalice","up":"Sự kiểm soát cảm xúc tốt, điềm tĩnh, ngoại giao, lòng trắc ẩn đi kèm lý trí vững vàng.","rv":"Kìm nén cảm xúc độc hại, thao túng, lạnh lùng, bất ổn nội tâm."},{"i":50,"a":"swords","r":1,"num":"1","n":"Át Kiếm Khopesh","e":"Khí: trí tuệ, suy nghĩ, lý trí, giao tiếp, sự thật, các quyết định sắc bén và xung đột","en":"Ace of Swords","eg":"Khopesh","up":"Ý tưởng đột phá, sự sáng suốt minh bạch, chân lý được phơi bày, quyết định dứt khoát.","rv":"Suy nghĩ hỗn loạn, sai lầm nghiêm trọng, thông tin sai lệch."},{"i":51,"a":"swords","r":2,"num":"2","n":"Hai Kiếm Khopesh","e":"Khí: trí tuệ, suy nghĩ, lý trí, giao tiếp, sự thật, các quyết định sắc bén và xung đột","en":"Two of Swords","eg":"Khopesh","up":"Sự bế tắc trong quyết định, né tránh sự thật, sự thỏa hiệp gượng gạo, bịt mắt trước thực tế.","rv":"Buộc phải đối mặt với sự thật, đưa ra quyết định khó khăn, phá vỡ bế tắc."},{"i":52,"a":"swords","r":3,"num":"3","n":"Ba Kiếm Khopesh","e":"Khí: trí tuệ, suy nghĩ, lý trí, giao tiếp, sự thật, các quyết định sắc bén và xung đột","en":"Three of Swords","eg":"Khopesh","up":"Nỗi đau tim, sự phản bội, tổn thương tinh thần, thất vọng sâu sắc trong các mối quan hệ.","rv":"Bắt đầu quá trình hàn gắn vết thương lòng, tha thứ, vượt qua nỗi buồn."},{"i":53,"a":"swords","r":4,"num":"4","n":"Bốn Kiếm Khopesh","e":"Khí: trí tuệ, suy nghĩ, lý trí, giao tiếp, sự thật, các quyết định sắc bén và xung đột","en":"Four of Swords","eg":"Khopesh","up":"Sự nghỉ ngơi, tĩnh dưỡng, phục hồi năng lượng sau căng thẳng, thời gian suy ngẫm.","rv":"Kiệt sức vì làm việc quá sức, căng thẳng kéo dài, sợ phải dừng lại."},{"i":54,"a":"swords","r":5,"num":"5","n":"Năm Kiếm Khopesh","e":"Khí: trí tuệ, suy nghĩ, lý trí, giao tiếp, sự thật, các quyết định sắc bén và xung đột","en":"Five of Swords","eg":"Khopesh","up":"Sự ích kỷ, chiến thắng bằng mọi giá, tranh cãi độc hại, cảm giác thua cuộc và cay đắng.","rv":"Hòa giải, thừa nhận sai lầm, rút lui khỏi tranh chấp vô nghĩa."},{"i":55,"a":"swords","r":6,"num":"6","n":"Sáu Kiếm Khopesh","e":"Khí: trí tuệ, suy nghĩ, lý trí, giao tiếp, sự thật, các quyết định sắc bén và xung đột","en":"Six of Swords","eg":"Khopesh","up":"Sự chuyển giao bình yên, rời bỏ giông bão để đến bến bờ an toàn hơn, sự hồi phục chậm rãi.","rv":"Khó khăn bủa vây, không thể thoát khỏi tình huống cũ, trì trệ."},{"i":56,"a":"swords","r":7,"num":"7","n":"Bảy Kiếm Khopesh","e":"Khí: trí tuệ, suy nghĩ, lý trí, giao tiếp, sự thật, các quyết định sắc bén và xung đột","en":"Seven of Swords","eg":"Khopesh","up":"Sự lén lút, mưu mẹo, trốn tránh trách nhiệm, hành động bí mật hoặc bị phản bội ngầm.","rv":"Sự thật bị bại lộ, hối cải, thú nhận lỗi lầm, đối mặt trực diện."},{"i":57,"a":"swords","r":8,"num":"8","n":"Tám Kiếm Khopesh","e":"Khí: trí tuệ, suy nghĩ, lý trí, giao tiếp, sự thật, các quyết định sắc bén và xung đột","en":"Eight of Swords","eg":"Khopesh","up":"Cảm giác bị kẹt, tự giới hạn bản thân bởi nỗi sợ hãi và suy nghĩ tiêu cực.","rv":"Tìm ra lối thoát, tự giải phóng bản thân, thay đổi tư duy."},{"i":58,"a":"swords","r":9,"num":"9","n":"Chín Kiếm Khopesh","e":"Khí: trí tuệ, suy nghĩ, lý trí, giao tiếp, sự thật, các quyết định sắc bén và xung đột","en":"Nine of Swords","eg":"Khopesh","up":"Lo âu mất ngủ, ám ảnh tinh thần, cảm giác tội lỗi và hoảng loạn nội tâm.","rv":"Giải tỏa lo âu, chia sẻ khó khăn với người khác, bắt đầu bình tâm."},{"i":59,"a":"swords","r":10,"num":"10","n":"Mười Kiếm Khopesh","e":"Khí: trí tuệ, suy nghĩ, lý trí, giao tiếp, sự thật, các quyết định sắc bén và xung đột","en":"Ten of Swords","eg":"Khopesh","up":"Sự sụp đổ cùng cực, kết thúc đau đớn nhưng triệt để, chạm đáy nỗi đau để hồi sinh.","rv":"Dần hồi phục sau cú sốc, vượt qua giai đoạn tồi tệ nhất, cứu vãn tình thế."},{"i":60,"a":"swords","r":11,"num":"","n":"Thị Đồng Kiếm Khopesh","e":"Khí: trí tuệ, suy nghĩ, lý trí, giao tiếp, sự thật, các quyết định sắc bén và xung đột","en":"Page of Swords","eg":"Khopesh","up":"Sự tò mò, cảnh giác, sắc sảo, thích phân tích thông tin nhưng dễ đa nghi, soi mói.","rv":"Lời nói sát thương, tung tin đồn thất thiệt, thiếu suy nghĩ trước sau."},{"i":61,"a":"swords","r":12,"num":"","n":"Chiến Binh Kiếm Khopesh","e":"Khí: trí tuệ, suy nghĩ, lý trí, giao tiếp, sự thật, các quyết định sắc bén và xung đột","en":"Knight of Swords","eg":"Khopesh","up":"Hành động chớp nhoáng dựa trên lý trí, quyết liệt, thẳng thắn nhưng đôi khi hiếu chiến.","rv":"Hấp tấp, dùng lời nói cay nghiệt làm tổn thương người khác."},{"i":62,"a":"swords","r":13,"num":"","n":"Nữ Hoàng Kiếm Khopesh","e":"Khí: trí tuệ, suy nghĩ, lý trí, giao tiếp, sự thật, các quyết định sắc bén và xung đột","en":"Queen of Swords","eg":"Khopesh","up":"Sự sắc sảo, độc lập, tư duy logic cao, công tâm, nhìn thấu sự thật qua vẻ bề ngoài.","rv":"Lạnh lùng, cay nghiệt, cô độc, phán xét quá khắt khe."},{"i":63,"a":"swords","r":14,"num":"","n":"Vua Kiếm Khopesh","e":"Khí: trí tuệ, suy nghĩ, lý trí, giao tiếp, sự thật, các quyết định sắc bén và xung đột","en":"King of Swords","eg":"Khopesh","up":"Trí tuệ uyên bác, công lý, lập trường vững vàng, tư duy chiến lược sắc bén.","rv":"Lạm dụng quyền lực trí tuệ, độc tài tư tưởng, tàn nhẫn, thiên vị."},{"i":64,"a":"pentacles","r":1,"num":"1","n":"Át Đĩa Vàng","e":"Đất: vật chất, tài chính, công việc, sức khỏe, sự ổn định, thực tế và của cải","en":"Ace of Pentacles","eg":"Golden Disc","up":"Cơ hội tài chính mới, nền tảng vật chất vững chắc, sự khởi đầu thịnh vượng và an toàn.","rv":"Cơ hội tài chính tuột mất, thiếu kế hoạch, đầu tư thua lỗ."},{"i":65,"a":"pentacles","r":2,"num":"2","n":"Hai Đĩa Vàng","e":"Đất: vật chất, tài chính, công việc, sức khỏe, sự ổn định, thực tế và của cải","en":"Two of Pentacles","eg":"Golden Disc","up":"Sự cân bằng tài chính và công việc, khéo léo xoay sở giữa nhiều nhiệm vụ, thích nghi linh hoạt.","rv":"Mất cân bằng, căng thẳng vì quá tải công việc, quản lý tài chính kém."},{"i":66,"a":"pentacles","r":3,"num":"3","n":"Ba Đĩa Vàng","e":"Đất: vật chất, tài chính, công việc, sức khỏe, sự ổn định, thực tế và của cải","en":"Three of Pentacles","eg":"Golden Disc","up":"Sự hợp tác nhóm hiệu quả, kỹ năng chuyên môn được công nhận, xây dựng nền tảng vững chắc.","rv":"Thiếu tinh thần đồng đội, bất đồng trong công việc, chất lượng kém."},{"i":67,"a":"pentacles","r":4,"num":"4","n":"Bốn Đĩa Vàng","e":"Đất: vật chất, tài chính, công việc, sức khỏe, sự ổn định, thực tế và của cải","en":"Four of Pentacles","eg":"Golden Disc","up":"Sự tích lũy tài sản, tính bảo thủ, keo kiệt, sợ mất kiểm soát về tài chính hoặc kiểm soát quá mức.","rv":"Học cách buông bỏ tiền bạc, chi tiêu phóng khoáng hơn, giải tỏa áp lực vật chất."},{"i":68,"a":"pentacles","r":5,"num":"5","n":"Năm Đĩa Vàng","e":"Đất: vật chất, tài chính, công việc, sức khỏe, sự ổn định, thực tế và của cải","en":"Five of Pentacles","eg":"Golden Disc","up":"Sự khó khăn tài chính, cảm giác nghèo túng, cô lập, bệnh tật hoặc thiếu thốn sự hỗ trợ.","rv":"Thoát khỏi giai đoạn khó khăn, nhận được sự giúp đỡ, cải thiện sức khỏe."},{"i":69,"a":"pentacles","r":6,"num":"6","n":"Sáu Đĩa Vàng","e":"Đất: vật chất, tài chính, công việc, sức khỏe, sự ổn định, thực tế và của cải","en":"Six of Pentacles","eg":"Golden Disc","up":"Sự chia sẻ tài chính, từ thiện, sòng phẳng trong tiền bạc, nhận hoặc cho đi sự giúp đỡ.","rv":"Mất cân bằng ơn huệ, lợi dụng lòng tốt, cho vay không đòi được."},{"i":70,"a":"pentacles","r":7,"num":"7","n":"Bảy Đĩa Vàng","e":"Đất: vật chất, tài chính, công việc, sức khỏe, sự ổn định, thực tế và của cải","en":"Seven of Pentacles","eg":"Golden Disc","up":"Sự kiên nhẫn chờ đợi kết quả đầu tư, đánh giá lại hiệu suất công việc, cân nhắc hướng đi dài hạn.","rv":"Thất vọng vì kết quả chậm, đầu tư sai chỗ, nỗ lực không được đền đáp."},{"i":71,"a":"pentacles","r":8,"num":"8","n":"Tám Đĩa Vàng","e":"Đất: vật chất, tài chính, công việc, sức khỏe, sự ổn định, thực tế và của cải","en":"Eight of Pentacles","eg":"Golden Disc","up":"Sự chăm chỉ, mài giũa kỹ năng chuyên môn, tinh thần tỉ mỉ, tập trung cao độ vào công việc.","rv":"Làm việc máy móc, thiếu sáng tạo, chán nản, cẩu thả."},{"i":72,"a":"pentacles","r":9,"num":"9","n":"Chín Đĩa Vàng","e":"Đất: vật chất, tài chính, công việc, sức khỏe, sự ổn định, thực tế và của cải","en":"Nine of Pentacles","eg":"Golden Disc","up":"Sự tự lập tài chính, tận hưởng thành quả lao động, sự xa hoa, sung túc và tự chủ cá nhân.","rv":"Phụ thuộc tài chính, tiêu xài hoang phí, đánh đổi thời gian lấy tiền bạc."},{"i":73,"a":"pentacles","r":10,"num":"10","n":"Mười Đĩa Vàng","e":"Đất: vật chất, tài chính, công việc, sức khỏe, sự ổn định, thực tế và của cải","en":"Ten of Pentacles","eg":"Golden Disc","up":"Sự giàu có lâu dài, gia sản thừa kế, sự viên mãn về vật chất và sự gắn kết gia đình bền vững.","rv":"Tranh chấp tài sản gia đình, mất mát tài chính lớn, suy thoái."},{"i":74,"a":"pentacles","r":11,"num":"","n":"Thị Đồng Đĩa Vàng","e":"Đất: vật chất, tài chính, công việc, sức khỏe, sự ổn định, thực tế và của cải","en":"Page of Pentacles","eg":"Golden Disc","up":"Cơ hội học hỏi thực tế, sự chăm chỉ, sinh viên hoặc nhân viên mới tiềm năng, bước đi thận trọng.","rv":"Thiếu thực tế, lười biếng, bỏ lỡ cơ hội phát triển bản thân."},{"i":75,"a":"pentacles","r":12,"num":"","n":"Chiến Binh Đĩa Vàng","e":"Đất: vật chất, tài chính, công việc, sức khỏe, sự ổn định, thực tế và của cải","en":"Knight of Pentacles","eg":"Golden Disc","up":"Sự chậm mà chắc, tinh thần trách nhiệm cao, đáng tin cậy, kiên trì theo đuổi mục tiêu vật chất.","rv":"Trì trệ, bảo thủ, quá cứng nhắc, chán ngắt trong thói quen."},{"i":76,"a":"pentacles","r":13,"num":"","n":"Nữ Hoàng Đĩa Vàng","e":"Đất: vật chất, tài chính, công việc, sức khỏe, sự ổn định, thực tế và của cải","en":"Queen of Pentacles","eg":"Golden Disc","up":"Người vun vén gia đình và tài chính tuyệt vời, thực tế, chu đáo, ấm áp và giàu có.","rv":"Quá coi trọng vật chất, kiệt sức vì lo toan, mất kết nối với bản thân."},{"i":77,"a":"pentacles","r":14,"num":"","n":"Vua Đĩa Vàng","e":"Đất: vật chất, tài chính, công việc, sức khỏe, sự ổn định, thực tế và của cải","en":"King of Pentacles","eg":"Golden Disc","up":"Sự thành công đỉnh cao về tài chính, doanh nhân thành đạt, an toàn, bảo bọc và thịnh vượng.","rv":"Tham lam, hám lợi, kiểm soát độc đoán về tiền bạc, quản lý yếu kém."}];
+const SPREADS = {
+  time:{name:'Quá khứ – Hiện tại – Tương lai',pos:['Quá khứ','Hiện tại','Tương lai'],hint:'Dòng chảy của sự việc'},
+  advice:{name:'Tình huống – Thử thách – Lời khuyên',pos:['Tình huống','Thử thách','Lời khuyên'],hint:'Khi cần một quyết định'},
+  love:{name:'Bạn – Người ấy – Mối quan hệ',pos:['Bạn','Người ấy','Mối quan hệ'],hint:'Cho câu hỏi tình cảm'},
+  self:{name:'Tâm trí – Cơ thể – Tinh thần',pos:['Tâm trí','Cơ thể','Tinh thần'],hint:'Soi lại chính mình'}
+};
+const SAMPLES=['Công việc của tôi sắp tới sẽ ra sao?','Tôi nên làm gì để mối quan hệ này tốt hơn?','Điều gì đang cản bước tôi lúc này?','Tôi cần biết gì trước khi đưa ra quyết định này?'];
+const $=s=>document.querySelector(s);
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+function rnd(){if(window.crypto&&crypto.getRandomValues){const a=new Uint32Array(1);crypto.getRandomValues(a);return a[0]/4294967296;}return Math.random();}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+
+/* ---------- bầu trời sao ---------- */
+(function sky(){const cv=$('#sky'),c=cv.getContext('2d');function draw(){const d=Math.min(2,devicePixelRatio||1),w=innerWidth,h=innerHeight;cv.width=w*d;cv.height=h*d;c.setTransform(d,0,0,d,0,0);
+  const g=c.createRadialGradient(w*.5,h*.35,0,w*.5,h*.35,Math.max(w,h)*.8);g.addColorStop(0,'#1d2766');g.addColorStop(.55,'#111850');g.addColorStop(1,'#070b22');c.fillStyle=g;c.fillRect(0,0,w,h);
+  let s=7;const R=()=>{s=(s*16807)%2147483647;return s/2147483647;};
+  for(let i=0;i<Math.round(w*h/2600);i++){const x=R()*w,y=R()*h*.85,r=R()<.06?1.5:R()*.9+.2;c.fillStyle='rgba(255,246,220,'+(.35+R()*.6).toFixed(2)+')';c.beginPath();c.arc(x,y,r,0,7);c.fill();}
+  const mw=c.createLinearGradient(0,h*.1,w,h*.6);mw.addColorStop(0,'rgba(140,150,230,0)');mw.addColorStop(.5,'rgba(160,170,240,.07)');mw.addColorStop(1,'rgba(140,150,230,0)');c.fillStyle=mw;c.fillRect(0,0,w,h);}
+  draw();let t;addEventListener('resize',()=>{clearTimeout(t);t=setTimeout(draw,150);});})();
+
+/* ---------- vẽ lá bài ---------- */
+const GOLD='#b8892f',LAPIS='#1f3f7a',TURQ='#2a9d8f',RED='#b5452f',INK='#3a2a14',SAND='#d9b45a';
+const BACK_SVG=(()=>{let petals='';for(let i=0;i<16;i++){const a=i*22.5;petals+=`<ellipse cx="0" cy="-46" rx="7" ry="17" transform="rotate(${a})" fill="${i%2?'#2f8f86':'#d9a94a'}"/>`;}
+ let rays='';for(let i=0;i<32;i++){rays+=`<line x1="0" y1="-60" x2="0" y2="-92" transform="rotate(${i*11.25})" stroke="#d9a94a" stroke-width="1.4" opacity=".55"/>`;}
+ const stem=(m)=>`<g transform="${m}"><path d="M28 318 C18 250 20 160 34 92" fill="none" stroke="#d9a94a" stroke-width="2.5"/><path d="M34 92 l-12 -16 M34 92 l-4 -20 M34 92 l6 -19 M34 92 l13 -14" stroke="#d9a94a" stroke-width="2" stroke-linecap="round"/><path d="M28 300 q-14 -8 -10 -24 q10 6 10 24z M28 300 q14 -8 10 -24 q-10 6 -10 24z" fill="#2f8f86"/></g>`;
+ return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 340"><defs><linearGradient id="bk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#18406a"/><stop offset="1" stop-color="#0d2443"/></linearGradient></defs>
+<rect width="200" height="340" rx="12" fill="#f3e6c8"/><rect x="7" y="7" width="186" height="326" rx="8" fill="url(#bk)"/>
+<path d="M20 326 V100 Q20 40 100 24 Q180 40 180 100 V326" fill="none" stroke="#d9a94a" stroke-width="3"/><path d="M27 326 V102 Q27 50 100 34 Q173 50 173 102 V326" fill="none" stroke="#d9a94a" stroke-width="1" opacity=".7"/>
+${stem('')}${stem('translate(200 0) scale(-1 1)')}
+<g transform="translate(100 172)">${rays}<circle r="64" fill="none" stroke="#d9a94a" stroke-width="2"/>${petals}<circle r="34" fill="#f1c95f"/><circle r="34" fill="none" stroke="#8a5a16" stroke-width="2"/>
+<g transform="scale(.42)" fill="none" stroke="#173a5e" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"><path d="M-52 0 Q0 -40 52 0 Q0 28 -52 0Z"/><circle cx="0" cy="-3" r="13" fill="#173a5e" stroke="none"/><path d="M-56 -30 Q0 -64 58 -28"/><path d="M-6 22 L-6 64"/><path d="M14 20 Q30 50 10 62 Q-2 66 2 54"/></g></g>
+<g fill="#d9a94a"><path d="M100 50 q-10 -12 0 -24 q10 12 0 24z"/><path d="M100 294 q-10 12 0 24 q10 -12 0 -24z"/><circle cx="100" cy="64" r="2.5"/><circle cx="100" cy="280" r="2.5"/></g></svg>`;})();
+
+const BACK_URL='url("data:image/svg+xml,'+encodeURIComponent(BACK_SVG)+'")';
+document.documentElement.style.setProperty('--back',BACK_URL);
+
+function ankh(x,y,s,col){return `<g transform="translate(${x} ${y}) scale(${s})"><ellipse cx="0" cy="-22" rx="12" ry="16" fill="none" stroke="${col||GOLD}" stroke-width="7"/><rect x="-24" y="-7" width="48" height="8" fill="${col||GOLD}"/><rect x="-4" y="-7" width="8" height="52" fill="${col||GOLD}"/></g>`;}
+function star5(x,y,r,col){let d='';for(let i=0;i<10;i++){const a=-Math.PI/2+i*Math.PI/5,rr=i%2?r*.38:r;d+=(i?'L':'M')+(x+Math.cos(a)*rr).toFixed(1)+' '+(y+Math.sin(a)*rr).toFixed(1);}return `<path d="${d}Z" fill="${col}"/>`;}
+function waves(y,w,col){let s='';for(let k=0;k<3;k++){let d=`M${-w} ${y+k*9}`;for(let x=-w;x<w;x+=12)d+=` q3 -5 6 0 t6 0`;s+=`<path d="${d}" fill="none" stroke="${col||TURQ}" stroke-width="2"/>`;}return s;}
+function sunRays(r,col){let s='';for(let i=0;i<16;i++){const a=i*Math.PI/8;s+=`<line x1="${(Math.cos(a)*(r+6)).toFixed(1)}" y1="${(Math.sin(a)*(r+6)).toFixed(1)}" x2="${(Math.cos(a)*(r+(i%2?14:24))).toFixed(1)}" y2="${(Math.sin(a)*(r+(i%2?14:24))).toFixed(1)}" stroke="${col}" stroke-width="3" stroke-linecap="round"/>`;}return s;}
+function wheel(r,n,col,w){let s=`<circle r="${r}" fill="none" stroke="${col}" stroke-width="${w}"/>`;for(let i=0;i<n;i++){const a=i*2*Math.PI/n;s+=`<line x1="0" y1="0" x2="${(Math.cos(a)*r).toFixed(1)}" y2="${(Math.sin(a)*r).toFixed(1)}" stroke="${col}" stroke-width="${w*.6}"/>`;}return s+`<circle r="${r*.18}" fill="${col}"/>`;}
+function scales(y,l,r){return `<line x1="0" y1="${y-40}" x2="0" y2="${y+50}" stroke="${INK}" stroke-width="4"/><path d="M-20 ${y+52}h40l6 8h-52z" fill="${INK}"/><line x1="-56" y1="${y-30}" x2="56" y2="${y-30}" stroke="${INK}" stroke-width="4"/><path d="M-56 ${y-30}l-16 34h32z M56 ${y-30}l-16 34h32z" fill="none" stroke="${INK}" stroke-width="2"/><path d="M-74 ${y+4}q18 12 36 0z M38 ${y+4}q18 12 36 0z" fill="${GOLD}"/><g transform="translate(-56 ${y-4})">${l}</g><g transform="translate(56 ${y-4})">${r}</g>`;}
+const HEART=`<path d="M-9 -2 Q-10 -14 0 -12 Q10 -14 9 -2 Q8 8 0 12 Q-8 8 -9 -2Z" fill="${RED}"/><rect x="-5" y="-17" width="10" height="5" fill="${RED}"/>`;
+const FEATHER=`<path d="M2 -26 Q10 -6 3 16 L-1 16 Q-6 -6 2 -26Z" fill="${TURQ}"/>`;
+const MAJOR_ICONS=[
+ /*0*/`<path d="M-62 60 L0 -42 L62 60Z" fill="${SAND}"/><path d="M0 -42 L62 60 L0 60Z" fill="#c09443"/><circle cx="44" cy="-66" r="16" fill="${RED}"/><path d="M-70 88 Q-25 70 0 80 T72 72" fill="none" stroke="${INK}" stroke-width="3" stroke-dasharray="7 7"/><path d="M-50 92 l6 -16 l6 16z" fill="${INK}"/>`,
+ /*1*/`<path d="M-30 -62 a32 32 0 1 0 60 0 a26 26 0 1 1 -60 0" fill="${LAPIS}"/><circle cx="-4" cy="6" r="18" fill="${INK}"/><path d="M10 0 Q52 16 70 62 Q48 28 8 14Z" fill="${INK}"/><circle cx="2" cy="2" r="3" fill="${SAND}"/><path d="M-20 20 Q-28 58 -14 92 L6 92 Q-4 58 6 22Z" fill="${INK}"/><rect x="-62" y="38" width="30" height="44" rx="4" fill="#efe0b8" stroke="${GOLD}" stroke-width="2"/><path d="M-56 50h18M-56 58h18M-56 66h12" stroke="${INK}" stroke-width="2"/>`,
+ /*2*/`<rect x="-78" y="-80" width="16" height="170" fill="${INK}"/><rect x="62" y="-80" width="16" height="170" fill="#e9dcc0" stroke="${INK}" stroke-width="2"/><path d="M-26 -70 h22 v74 h44 v24 h-66Z" fill="${LAPIS}"/><path d="M-8 -50 h12 v54 h-12Z" fill="${GOLD}"/><path d="M-30 52 a34 34 0 1 0 60 0 a28 28 0 1 1 -60 0" fill="#d8d2c4" stroke="${INK}" stroke-width="1.5"/>`,
+ /*3*/`<path d="M-66 -6 Q-82 -92 -22 -100 Q-58 -80 -50 -10Z" fill="${INK}"/><path d="M66 -6 Q82 -92 22 -100 Q58 -80 50 -10Z" fill="${INK}"/><circle cx="0" cy="-48" r="34" fill="${RED}"/><path d="M0 92 Q-8 40 0 10 Q8 40 0 92Z" fill="${TURQ}"/><path d="M0 92 Q-40 60 -36 22 Q-14 44 0 92Z M0 92 Q40 60 36 22 Q14 44 0 92Z" fill="#4fbfaf"/>`,
+ /*4*/`<path d="M-58 76 L-44 -36 Q0 -84 44 -36 L58 76 L30 76 L22 -6 L-22 -6 L-30 76Z" fill="${LAPIS}"/><g stroke="${SAND}" stroke-width="5"><line x1="-50" y1="10" x2="-28" y2="10"/><line x1="-52" y1="34" x2="-29" y2="34"/><line x1="-55" y1="58" x2="-30" y2="58"/><line x1="50" y1="10" x2="28" y2="10"/><line x1="52" y1="34" x2="29" y2="34"/><line x1="55" y1="58" x2="30" y2="58"/><path d="M-36 -40 Q0 -70 36 -40" fill="none"/></g><ellipse cx="0" cy="12" rx="22" ry="30" fill="#c08a4a"/><path d="M-8 6h6M2 6h6" stroke="${INK}" stroke-width="3"/><rect x="-5" y="40" width="10" height="26" rx="3" fill="${INK}"/><path d="M0 -58 q8 -6 4 -16 q-6 -6 -8 2" fill="none" stroke="${GOLD}" stroke-width="4"/>`,
+ /*5*/`<path d="M-22 -100 Q-30 -40 -24 0 L-4 0 Q-2 -52 -22 -100Z" fill="${TURQ}"/><path d="M22 -100 Q30 -40 24 0 L4 0 Q2 -52 22 -100Z" fill="${TURQ}"/><path d="M-20 -60h16M4 -60h16M-22 -30h18M4 -30h18" stroke="#1f6f66" stroke-width="2"/><rect x="-30" y="0" width="60" height="20" fill="${RED}"/>${ankh(0,62,1.1)}`,
+ /*6*/`${ankh(-38,10,1.2)}${ankh(38,10,1.2)}<g transform="translate(0 -40) scale(2.2)">${HEART}</g><path d="M-80 86 Q0 60 80 86" fill="none" stroke="${TURQ}" stroke-width="3"/>`,
+ /*7*/`<g transform="translate(0 30)">${wheel(46,6,INK,6)}</g><g transform="translate(0 -64)"><circle r="14" fill="${RED}"/><path d="M-16 -2 Q-50 -26 -84 -6 Q-56 -6 -18 6Z M16 -2 Q50 -26 84 -6 Q56 -6 18 6Z" fill="${LAPIS}"/><path d="M-30 -6l-6 8M-46 -8l-6 8M-62 -8l-6 8M30 -6l6 8M46 -8l6 8M62 -8l6 8" stroke="${SAND}" stroke-width="2"/></g>`,
+ /*8*/`<g transform="translate(0 -30)">${sunRays(38,SAND)}<circle r="38" fill="${RED}"/><path d="M-8 -38 q-4 -16 8 -18 q10 2 4 14" fill="none" stroke="${GOLD}" stroke-width="5"/></g><path d="M-40 92 Q-46 58 -22 40 Q-24 62 -10 68 Q-8 44 8 32 Q6 60 22 66 Q24 50 38 44 Q50 70 40 92Z" fill="${GOLD}"/>`,
+ /*9*/`<rect x="-70" y="60" width="140" height="22" fill="${SAND}"/><rect x="-54" y="38" width="108" height="22" fill="#c9a250"/><rect x="-38" y="16" width="76" height="22" fill="${SAND}"/><rect x="-22" y="-6" width="44" height="22" fill="#c9a250"/>${star5(0,-58,26,GOLD)}<circle cx="0" cy="-58" r="34" fill="none" stroke="${GOLD}" stroke-width="1.5" stroke-dasharray="3 5"/>`,
+ /*10*/`<circle r="70" fill="none" stroke="${TURQ}" stroke-width="7"/><path d="M-6 -78 l12 0 l-6 -12z" fill="${TURQ}"/><circle cx="0" cy="-70" r="7" fill="${TURQ}"/>${wheel(50,8,INK,5)}`,
+ /*11*/`${scales(10,FEATHER.replace('scale','s'),'<g transform="scale(.9)">'+FEATHER+'</g>')}<path d="M0 -96 Q16 -66 6 -40 L-4 -40 Q-14 -66 0 -96Z" fill="${TURQ}"/>`,
+ /*12*/`<g transform="rotate(180)"><rect x="-14" y="-40" width="28" height="130" fill="${SAND}" stroke="${INK}" stroke-width="2"/><g fill="${LAPIS}"><rect x="-34" y="-84" width="68" height="9"/><rect x="-32" y="-70" width="64" height="9"/><rect x="-30" y="-56" width="60" height="9"/><rect x="-28" y="-42" width="56" height="9"/></g><path d="M-20 -88 h40 v-8 h-40z" fill="${INK}"/></g><path d="M0 -96 V-110" stroke="${INK}" stroke-width="3"/>`,
+ /*13*/`<path d="M-32 84 L-32 12 Q-38 -18 -22 -40 L-28 -98 L-6 -56 L6 -56 L12 -98 L20 -44 Q34 -30 74 -10 L72 2 Q32 8 16 22 L22 84Z" fill="#151515"/><path d="M8 -26 l14 4 l-12 4z" fill="${GOLD}"/><path d="M-46 84 Q-6 52 38 84" fill="none" stroke="${GOLD}" stroke-width="8"/><path d="M-50 94 Q-6 64 44 94" fill="none" stroke="${TURQ}" stroke-width="6"/>`,
+ /*14*/`<g transform="translate(-34 -38) rotate(-28)"><path d="M-18 -26h36l-4 10q14 26 -2 54h-24q-16 -28 -2 -54z" fill="${TURQ}"/></g><g transform="translate(34 -38) rotate(28)"><path d="M-18 -26h36l-4 10q14 26 -2 54h-24q-16 -28 -2 -54z" fill="${LAPIS}"/></g><path d="M-16 -10 Q0 10 -4 40 Q6 60 0 78 M16 -10 Q2 12 6 40" fill="none" stroke="#5fb8e0" stroke-width="5" stroke-linecap="round"/>${waves(74,70,'#5fb8e0')}`,
+ /*15*/`<path d="M-26 84 L-26 4 Q-30 -18 -16 -28 L-22 -98 L-8 -98 L-6 -46 L4 -46 L6 -98 L20 -98 L16 -34 Q42 -30 62 -4 Q64 6 52 6 Q26 0 12 16 L16 84Z" fill="#7a2e1e"/><circle cx="-2" cy="-14" r="3" fill="${GOLD}"/><g fill="none" stroke="${INK}" stroke-width="4"><ellipse cx="-50" cy="76" rx="8" ry="5"/><ellipse cx="-38" cy="82" rx="8" ry="5"/><ellipse cx="38" cy="82" rx="8" ry="5"/><ellipse cx="50" cy="76" rx="8" ry="5"/></g>`,
+ /*16*/`<path d="M-20 90 L-14 -30 L0 -50 L14 -30 L20 90Z" fill="${SAND}"/><path d="M-16 -4 L6 6 L-6 20 L14 30" fill="none" stroke="${INK}" stroke-width="3"/><path d="M30 -100 L6 -44 L22 -44 L-2 10" fill="none" stroke="${GOLD}" stroke-width="6" stroke-linejoin="round"/><path d="M-80 82 Q-60 62 -40 82 T0 82 T40 82 T80 78" fill="none" stroke="#3d5a2a" stroke-width="7" stroke-linecap="round"/><circle cx="78" cy="76" r="5" fill="#3d5a2a"/>`,
+ /*17*/`${star5(0,-30,54,GOLD)}${star5(-60,-80,10,SAND)}${star5(62,-70,8,SAND)}${star5(-62,26,7,SAND)}${waves(64,70,TURQ)}`,
+ /*18*/`<circle cx="0" cy="-48" r="28" fill="#e8e2cf" stroke="${INK}" stroke-width="1.5"/><path d="M-44 -48 a44 44 0 0 0 88 0 a40 40 0 0 1 -88 0" fill="${LAPIS}"/><path d="M-70 60 L-44 20 L-18 60Z M18 60 L44 20 L70 60Z" fill="#c09443"/>${waves(70,70,TURQ)}`,
+ /*19*/`${sunRays(46,GOLD)}<circle r="46" fill="${RED}"/><path d="M-10 -46 q-6 -22 10 -24 q14 2 6 18" fill="none" stroke="${GOLD}" stroke-width="6"/><g transform="translate(0 80)"><ellipse rx="22" ry="16" fill="${INK}"/><path d="M-22 -4 l-14 -8 M22 -4 l14 -8 M-20 8 l-14 8 M20 8 l14 8" stroke="${INK}" stroke-width="4"/></g>`,
+ /*20*/`${scales(0,'<g transform="scale(1.2)">'+HEART+'</g>','<g transform="scale(1.1)">'+FEATHER+'</g>')}<path d="M-36 -96 L36 -96 L28 -80 L-28 -80Z" fill="${LAPIS}"/>`,
+ /*21*/`<circle r="44" fill="#4a7fb0"/><path d="M-36 -20 Q-10 -30 4 -10 Q20 8 38 0 M-40 18 Q-14 6 6 22 Q24 36 34 26" fill="none" stroke="#7fc38f" stroke-width="6"/>${(()=>{let s='';for(let i=0;i<12;i++){const a=i*Math.PI/6;s+=star5(Math.cos(a)*76,Math.sin(a)*76,9,GOLD);}return s;})()}`
+];
+const SUIT={
+ wands:s=>`<g transform="scale(${s})"><path d="M-2.5 -42 L2.5 -42 L3.5 34 L9 44 L4.5 44 L0 37 L-4.5 44 L-9 44 L-3.5 34Z" fill="${LAPIS}"/><path d="M-3 -42 Q-1 -54 10 -53 L14 -48 L5 -46Z" fill="${LAPIS}"/></g>`,
+ cups:s=>`<g transform="scale(${s})"><path d="M-18 -30 Q-18 2 0 6 Q18 2 18 -30Z" fill="${TURQ}"/><path d="M-10 -30 Q-8 -8 0 4 M10 -30 Q8 -8 0 4" stroke="#1f6f66" stroke-width="1.5" fill="none"/><rect x="-2.5" y="6" width="5" height="22" fill="${GOLD}"/><ellipse cx="0" cy="30" rx="13" ry="4" fill="${GOLD}"/></g>`,
+ swords:s=>`<g transform="scale(${s})"><path d="M-3 18 L-3 -2 Q-2 -24 14 -38 Q28 -46 24 -28 Q10 -22 8 -8 L4 0 L4 18Z" fill="#8e8f93"/><path d="M-10 18 h20 v4 h-20z" fill="${GOLD}"/><rect x="-3" y="22" width="6" height="18" fill="${INK}"/></g>`,
+ pentacles:s=>`<g transform="scale(${s})"><circle r="19" fill="${SAND}" stroke="${GOLD}" stroke-width="3"/><path d="M-11 0 Q0 -9 11 0 Q0 7 -11 0Z" fill="none" stroke="${INK}" stroke-width="2"/><circle r="3.5" fill="${INK}"/></g>`
+};
+const PIPS={1:[[0,0]],2:[[0,-52],[0,52]],3:[[0,-62],[0,0],[0,62]],4:[[-36,-46],[36,-46],[-36,46],[36,46]],5:[[-36,-52],[36,-52],[0,0],[-36,52],[36,52]],
+ 6:[[-36,-62],[36,-62],[-36,0],[36,0],[-36,62],[36,62]],7:[[-36,-64],[36,-64],[0,-32],[-36,0],[36,0],[-36,64],[36,64]],
+ 8:[[-36,-66],[36,-66],[0,-33],[-36,0],[36,0],[0,33],[-36,66],[36,66]],9:[[-36,-72],[36,-72],[-36,-24],[36,-24],[0,0],[-36,24],[36,24],[-36,72],[36,72]],
+ 10:[[-36,-74],[36,-74],[0,-50],[-36,-25],[36,-25],[-36,25],[36,25],[0,50],[-36,74],[36,74]]};
+const CROWNS={
+ 11:`${FEATHER.replace('<path','<path transform="scale(1.6)"')}`,
+ 12:`<path d="M-26 20 Q-30 -20 0 -34 Q30 -20 26 20Z" fill="${LAPIS}"/><g fill="${SAND}"><circle cx="-12" cy="-6" r="2.5"/><circle cx="0" cy="-12" r="2.5"/><circle cx="12" cy="-6" r="2.5"/><circle cx="-8" cy="8" r="2.5"/><circle cx="8" cy="8" r="2.5"/></g>`,
+ 13:`<path d="M-40 14 Q-30 -26 0 -24 Q30 -26 40 14 Q20 0 0 4 Q-20 0 -40 14Z" fill="${GOLD}"/><path d="M-6 -24 q6 -14 12 -2" fill="none" stroke="${INK}" stroke-width="4"/><path d="M-30 4l-6 8M-18 -2l-4 8M18 -2l4 8M30 4l6 8" stroke="${INK}" stroke-width="2"/>`,
+ 14:`<path d="M-22 22 L-22 -6 Q-10 -2 -8 -14 L-8 -44 Q0 -50 8 -44 L8 -14 Q10 -2 22 -6 L22 22Z" fill="#f2ead6" stroke="${INK}" stroke-width="2"/><path d="M-30 22 V-10 H-16 V8 H16 V-22 H30 V22Z" fill="${RED}"/>`
+};
+/* ---------- cảnh nền Art Nouveau ---------- */
+const SCN={
+ sun:{sky:['#f3b84c','#fbe5a8'],rays:'#fff4c9',sun:[100,70,26,'#fff1bf'],land:'dunes',palms:2},
+ sunrise:{sky:['#f6c56a','#fde9bf'],rays:'#fff6d8',sun:[100,250,30,'#fbd36a'],land:'dunes',palms:1,pyr:1},
+ desert:{sky:['#e98b4e','#f8d39b'],rays:'#ffe2b0',sun:[60,236,22,'#c9452f'],land:'dunes',pyr:1},
+ nile:{sky:['#9fcfe0','#eef3e2'],sun:[150,80,14,'#fff6d6'],land:'nile',reeds:1},
+ wheat:{sky:['#a9d3df','#f5e8c4'],sun:[150,78,14,'#fff6d6'],land:'fields',palms:1,wheat:1},
+ temple:{sky:['#e3cf9f','#f6ead0'],rays:'#fff4d6',sun:[100,90,20,'#f6d27a'],land:'floor',cols:1},
+ night:{sky:['#1c2756','#56628f'],stars:1,moon:[140,74,13],land:'nightdunes',pyr:1},
+ dusk:{sky:['#5d3b70','#e7915d'],sun:[100,250,30,'#e9643f'],land:'darkdunes',palms:2},
+ storm:{sky:['#3d3c58','#9c8f9c'],clouds:1,land:'darkdunes'},
+ garden:{sky:['#bfe0d6','#f3ecd2'],rays:'#ffffff',sun:[100,76,16,'#fff4cf'],land:'garden',trees:1},
+ sky:{sky:['#b7d3ea','#f6efe0'],rays:'#ffffff',sun:[100,80,18,'#fff5d8'],clouds:1,land:'dunes'}
+};
+const MAJOR_SCN=['sunrise','temple','night','wheat','sunrise','temple','garden','desert','sun','night','sky','temple','garden','dusk','nile','dusk','storm','night','night','sun','sky','sky'];
+const SUIT_SCN={wands:'desert',cups:'nile',swords:'sky',pentacles:'wheat'};
+function palm(x,y,s,flip,col){const f=flip?-1:1;return `<g transform="translate(${x} ${y}) scale(${f*s} ${s})"><path d="M0 0 C4 -40 2 -80 12 -112" fill="none" stroke="${col||'#7a5a34'}" stroke-width="5" stroke-linecap="round"/><g fill="${col?col:'#3f7a4a'}"><path d="M12 -112 Q-14 -122 -34 -100 Q-10 -110 12 -110Z"/><path d="M12 -112 Q34 -128 56 -108 Q32 -114 12 -110Z"/><path d="M12 -112 Q-4 -140 -22 -142 Q-2 -128 12 -110Z"/><path d="M12 -112 Q30 -142 46 -138 Q26 -128 12 -110Z"/><path d="M12 -112 Q10 -96 -6 -80 Q14 -92 14 -110Z"/></g>${col?'':'<g fill="#c4612e"><circle cx="10" cy="-106" r="3"/><circle cx="16" cy="-104" r="3"/><circle cx="13" cy="-100" r="3"/></g>'}</g>`;}
+function reeds(x,y,s,flip){const f=flip?-1:1;let g='';for(let i=0;i<5;i++){const dx=i*7,h=70+i*12;g+=`<path d="M${dx} 0 Q${dx+4} ${-h/2} ${dx+(i-2)*4} ${-h}" fill="none" stroke="#4f7d42" stroke-width="2"/><path d="M${dx+(i-2)*4} ${-h} l-9 -10 M${dx+(i-2)*4} ${-h} l-3 -13 M${dx+(i-2)*4} ${-h} l4 -13 M${dx+(i-2)*4} ${-h} l10 -9" stroke="#6f9a4c" stroke-width="1.6" stroke-linecap="round"/>`;}return `<g transform="translate(${x} ${y}) scale(${f*s} ${s})">${g}</g>`;}
+function wheatF(y){let g='';for(let i=0;i<14;i++){const x=22+i*11.5+(i%3)*2,h=40+(i*37%22);g+=`<path d="M${x} ${y} Q${x+3} ${y-h/2} ${x+(i%2?5:-4)} ${y-h}" fill="none" stroke="#b98a3a" stroke-width="1.6"/>`;for(let k=0;k<4;k++)g+=`<ellipse cx="${x+(i%2?5:-4)}" cy="${y-h+4+k*5}" rx="2.4" ry="4" fill="#d9a948" transform="rotate(${i%2?20:-20} ${x+(i%2?5:-4)} ${y-h+4+k*5})"/>`;}return g;}
+function sceneSVG(id,key){const S=SCN[key];let s=`<linearGradient id="sk${id}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${S.sky[0]}"/><stop offset="1" stop-color="${S.sky[1]}"/></linearGradient>`;
+ let b=`<rect x="0" y="0" width="200" height="340" fill="url(#sk${id})"/>`;
+ if(S.rays){const [cx,cy]=S.sun||[100,80];let r='';for(let i=0;i<28;i++){const a=i*Math.PI*2/28,a2=a+Math.PI/28;r+=`M${cx} ${cy}L${(cx+Math.cos(a)*320).toFixed(0)} ${(cy+Math.sin(a)*320).toFixed(0)}L${(cx+Math.cos(a2)*320).toFixed(0)} ${(cy+Math.sin(a2)*320).toFixed(0)}Z`;}b+=`<path d="${r}" fill="${S.rays}" opacity=".35"/>`;}
+ if(S.stars){let st='';for(let i=0;i<26;i++){st+=`<circle cx="${(30+(i*53)%140)}" cy="${(40+(i*71)%150)}" r="${i%5?0.9:1.6}" fill="#fff6dc"/>`;}b+=st;}
+ if(S.sun){const [x,y,r,c]=S.sun;b+=`<circle cx="${x}" cy="${y}" r="${r*1.6}" fill="${c}" opacity=".25"/><circle cx="${x}" cy="${y}" r="${r}" fill="${c}"/>`;}
+ if(S.moon){const [x,y,r]=S.moon;b+=`<circle cx="${x}" cy="${y}" r="${r}" fill="#f4ecd2"/><circle cx="${x+5}" cy="${y-3}" r="${r}" fill="${S.sky[0]}" opacity=".95"/>`;}
+ if(S.clouds)b+=`<g fill="#fffaf0" opacity=".8"><ellipse cx="54" cy="96" rx="26" ry="9"/><ellipse cx="70" cy="90" rx="18" ry="10"/><ellipse cx="148" cy="124" rx="28" ry="9"/><ellipse cx="134" cy="118" rx="16" ry="9"/></g>`;
+ if(S.pyr)b+=`<path d="M118 238 L146 204 L174 238Z" fill="#d9b277"/><path d="M146 204 L174 238 L146 238Z" fill="#b98f55"/><path d="M150 238 L166 218 L182 238Z" fill="#cfa66a"/>`;
+ const L=S.land;
+ if(L==='dunes')b+=`<path d="M0 240 Q50 222 100 236 T200 230 V340 H0Z" fill="#e7c27f"/><path d="M0 262 Q70 246 130 262 T200 258 V340 H0Z" fill="#d7a862"/>`;
+ if(L==='darkdunes')b+=`<path d="M0 244 Q60 228 110 242 T200 236 V340 H0Z" fill="#7a4a46"/><path d="M0 266 Q70 250 130 266 T200 262 V340 H0Z" fill="#5a3640"/>`;
+ if(L==='nightdunes')b+=`<path d="M0 246 Q60 230 110 244 T200 238 V340 H0Z" fill="#2c3360"/><path d="M0 268 Q70 252 130 268 T200 264 V340 H0Z" fill="#1e2448"/>`;
+ if(L==='nile')b+=`<path d="M0 222 Q100 212 200 222 V340 H0Z" fill="#c9d9a8"/><path d="M0 240 Q100 230 200 240 V292 Q100 284 0 292Z" fill="#5fa9c0"/><g stroke="#e8f6f6" stroke-width="1.5" opacity=".8"><path d="M30 252h24M110 262h30M60 276h22M150 248h20"/></g><path d="M0 292 Q100 284 200 292 V340 H0Z" fill="#9cbf7d"/><g fill="#6f9a52"><ellipse cx="70" cy="268" rx="10" ry="3"/><ellipse cx="140" cy="280" rx="9" ry="3"/></g><circle cx="72" cy="265" r="3.5" fill="#f2a6b8"/>`;
+ if(L==='fields')b+=`<path d="M0 232 Q100 222 200 232 V340 H0Z" fill="#a9c47a"/><path d="M0 250 Q100 240 200 250 V340 H0Z" fill="#d9bd6a"/>`;
+ if(L==='floor')b+=`<path d="M0 248 H200 V340 H0Z" fill="#d9c08a"/><g stroke="#b99a62" stroke-width="1.2"><path d="M0 262H200M0 282H200M0 306H200M40 248L20 340M100 248V340M160 248L180 340"/></g>`;
+ if(L==='garden')b+=`<path d="M0 236 Q100 226 200 236 V340 H0Z" fill="#9fc47e"/><path d="M0 262 Q100 252 200 262 V340 H0Z" fill="#83ad66"/><g fill="#e8746a"><circle cx="40" cy="270" r="3"/><circle cx="160" cy="276" r="3"/><circle cx="120" cy="290" r="3"/></g><g fill="#f4d35e"><circle cx="70" cy="284" r="2.6"/><circle cx="146" cy="262" r="2.6"/></g>`;
+ if(S.trees)b+=`<g><rect x="34" y="200" width="5" height="40" fill="#7a5a34"/><ellipse cx="36" cy="196" rx="22" ry="12" fill="#5f8f4e"/><rect x="160" y="208" width="4" height="32" fill="#7a5a34"/><ellipse cx="162" cy="204" rx="18" ry="10" fill="#6f9f5a"/></g>`;
+ if(S.cols)b+=`<g fill="#e7d3a6" stroke="#a9884f" stroke-width="1.2"><rect x="24" y="96" width="22" height="152"/><rect x="154" y="96" width="22" height="152"/><path d="M20 96 Q35 78 50 96Z M150 96 Q165 78 180 96Z"/></g><g stroke="#2f8f86" stroke-width="2"><path d="M24 130h22M24 136h22M154 130h22M154 136h22"/></g>`;
+ const pc=(L==='darkdunes'||L==='nightdunes')?'#2a1c2c':null;
+ if(S.palms)b+=palm(28,252,.95,false,pc)+(S.palms>1?palm(176,256,.85,true,pc):'');
+ if(S.reeds)b+=reeds(20,300,1,false)+reeds(182,300,1,true);
+ if(S.wheat)b+=wheatF(332);
+ return {defs:s,body:b};}
+
+function frameSVG(id,num){
+ const stem=(m)=>`<g transform="${m}"><path d="M14 332 C8 250 10 150 22 88 C26 66 36 52 52 44" fill="none" stroke="#b8892f" stroke-width="2.6"/><path d="M22 92 C30 80 30 70 24 62" fill="none" stroke="#b8892f" stroke-width="1.6"/><path d="M20 300 q-12 -6 -9 -22 q9 6 9 22z M20 300 q12 -6 9 -22 q-9 6 -9 22z M20 300 q0 -16 0 -26 q4 12 0 26z" fill="#2f8f86"/><circle cx="52" cy="44" r="3" fill="#b8892f"/></g>`;
+ return `<path d="M22 332 V102 Q22 44 100 28 Q178 44 178 102 V332" fill="none" stroke="#b8892f" stroke-width="3.2"/><path d="M28 332 V104 Q28 52 100 36 Q172 52 172 104 V332" fill="none" stroke="#e7cf8f" stroke-width="1.2"/>${stem('')}${stem('translate(200 0) scale(-1 1)')}
+<path d="M70 26 Q86 26 88 16 M130 26 Q114 26 112 16" fill="none" stroke="#b8892f" stroke-width="1.8"/>${num?`<circle cx="100" cy="20" r="14" fill="#f8efd8" stroke="#b8892f" stroke-width="2"/><text x="100" y="25" text-anchor="middle" font-family="Cormorant Garamond,Georgia,serif" font-weight="700" font-size="${num.length>3?10:13}" fill="#3a2a14">${num}</text>`:`<path d="M100 8 q-9 10 0 22 q9 -12 0 -22z" fill="#2f8f86" stroke="#b8892f" stroke-width="1.5"/>`}`;}
+
+function cardSVG(c){
+  const id=c.i,key=c.a==='major'?MAJOR_SCN[c.r]:SUIT_SCN[c.a],sc=sceneSVG(id,key);
+  let emb='',num=c.num;
+  const halo=`<ellipse cx="100" cy="176" rx="64" ry="78" fill="url(#hl${id})"/>`;
+  if(c.a==='major'){emb=halo+`<g transform="translate(100 176) scale(.74)">${MAJOR_ICONS[c.r]}</g>`;}
+  else if(c.r<=10){const tall=c.a==='wands'||c.a==='swords';let pts=PIPS[c.r];if(tall&&c.r===2)pts=[[-30,0],[30,0]];if(tall&&c.r===3)pts=[[-46,4],[0,-4],[46,4]];
+    const s=(c.r===1?(c.a==='wands'?1.9:2.4):(c.a==='wands'?(c.r<=3?1.15:c.r<=6?.56:.45):tall?(c.r<=3?1.25:c.r<=6?.72:.6):(c.r<=3?1.3:c.r<=6?.95:.78)))*.82;
+    emb=halo+`<g transform="translate(100 178) scale(.84)">${pts.map(([x,y])=>`<g transform="translate(${x} ${y})">${SUIT[c.a](s/.84*.84)}</g>`).join('')}</g>`;}
+  else{const tl=c.a==='wands'||c.a==='swords';emb=halo+`<g transform="translate(100 ${tl?200:190})">${SUIT[c.a](tl?1.3:1.8)}</g><g transform="translate(100 100) scale(.9)">${CROWNS[c.r]}</g>`;num='';}
+  const title=c.en,fs=title.length>20?11.5:title.length>15?13:title.length>11?15:16.5;
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 340" role="img" aria-label="${esc(c.en)}"><defs>${sc.defs}<radialGradient id="hl${id}"><stop offset="0" stop-color="#fffaf0" stop-opacity=".75"/><stop offset="1" stop-color="#fffaf0" stop-opacity="0"/></radialGradient><clipPath id="cw${id}"><path d="M28 332 V104 Q28 52 100 36 Q172 52 172 104 V332Z"/></clipPath></defs>
+<rect width="200" height="340" rx="12" fill="#f6ecd4"/><g clip-path="url(#cw${id})">${sc.body}${emb}</g>
+${frameSVG(id,num)}
+<path d="M36 300 H164 Q172 300 172 308 V324 Q172 332 164 332 H36 Q28 332 28 324 V308 Q28 300 36 300Z" fill="#f8efd8" stroke="#b8892f" stroke-width="2"/><text x="100" y="315" text-anchor="middle" font-family="Cormorant Garamond,Georgia,serif" font-weight="700" font-size="${fs}" fill="#3a2a14">${esc(title)}</text><text x="100" y="327" text-anchor="middle" font-family="Be Vietnam Pro,system-ui,sans-serif" font-size="6.5" letter-spacing="1.2" fill="#7a5a2a">${esc(c.eg.toUpperCase())}</text></svg>`;
+}
+
+/* ---------- giao diện câu hỏi ---------- */
+let spreadId='time';
+$('#chips').innerHTML=SAMPLES.map(s=>`<button type="button">${esc(s)}</button>`).join('');
+$('#chips').addEventListener('click',e=>{const b=e.target.closest('button');if(b){$('#q').value=b.textContent;$('#q').focus();}});
+$('#spreads').innerHTML=Object.entries(SPREADS).map(([k,v],i)=>`<label class="sp"><input type="radio" name="spread" value="${k}" ${i===0?'checked':''}><span><b>${esc(v.pos.join(' · '))}</b><small>${esc(v.hint)}</small></span></label>`).join('');
+$('#spreads').addEventListener('change',e=>{if(e.target.name==='spread')spreadId=e.target.value;});
+$('#helpBtn').addEventListener('click',()=>{const d=$('#help');d.showModal?d.showModal():d.setAttribute('open','');});
+
+/* ---------- vòng bài ---------- */
+const ring=$('#ring'),stage=$('#stage'),hint=$('#hint'),slotsEl=$('#slots');
+let order=[],picks=[],phase='idle',question='';
+function sizeStage(){const w=stage.clientWidth||600,cw=Math.max(24,Math.round(w*.072)),ch=Math.round(cw*1.7);stage.style.setProperty('--cw',cw+'px');stage.style.setProperty('--ch',ch+'px');stage.style.setProperty('--Rpx',Math.round(w*.41)+'px');}
+addEventListener('resize',()=>{sizeStage();ring.querySelectorAll('.c').forEach(el=>{if(el.dataset.placed)el.style.setProperty('--t',ringT(+el.dataset.k,0));});});
+function ringT(k,lift){const a=k/78*360;return `rotate(${a}deg) translateY(calc(-1 * var(--Rpx) - ${lift}px))`;}
+function shuffleDeck(){const a=DECK.map(c=>c.i);for(let i=a.length-1;i>0;i--){const j=Math.floor(rnd()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+
+function buildSlots(){const sp=SPREADS[spreadId];slotsEl.innerHTML=sp.pos.map((p,k)=>`<div class="slot" data-k="${k}"><div class="lbl">${k+1} · ${esc(p)}</div><div class="well"></div><div class="nm"></div><div class="meta"></div></div>`).join('');}
+
+async function startReading(){
+  question=$('#q').value.replace(/\s+/g,' ').trim();
+  if(question.length<3){const e=$('#askErr');e.textContent='Hãy viết câu hỏi của bạn trước khi xáo bài.';e.hidden=false;$('#q').focus();return;}
+  $('#askErr').hidden=true;spreadId=(document.querySelector('input[name=spread]:checked')||{}).value||'time';
+  $('#ask').hidden=true;$('#table').hidden=false;$('#reading').hidden=true;$('#readText').innerHTML='';
+  $('#qecho').innerHTML=`<small>${esc(SPREADS[spreadId].name)}</small>«${esc(question)}»`;
+  buildSlots();sizeStage();picks=[];phase='shuffle';ring.className='ring still';ring.style.transform='';
+  $('#altar').classList.remove('breathe');$('#breath').hidden=true;
+  window.scrollTo({top:$('#table').offsetTop-10,behavior:reduce?'auto':'smooth'});
+  order=shuffleDeck();ring.innerHTML='';
+  const frag=document.createDocumentFragment();
+  order.forEach((ci,k)=>{const b=document.createElement('button');b.type='button';b.className='c';b.dataset.k=k;b.dataset.ci=ci;b.setAttribute('aria-label','Lá bài úp số '+(k+1));b.tabIndex=-1;
+    b.style.setProperty('--t',`translate(${(rnd()-.5)*8}px,${(rnd()-.5)*8}px) rotate(${(rnd()-.5)*6}deg)`);frag.appendChild(b);});
+  ring.appendChild(frag);
+  hint.innerHTML='Đang xáo bài…';
+  const cards=[...ring.children];
+  await wait(60);
+  if(!reduce)for(let round=0;round<4;round++){cards.forEach(el=>{const side=rnd()<.5?-1:1;el.style.setProperty('--t',`translate(${side*(20+rnd()*60)}px,${(rnd()-.5)*30}px) rotate(${(rnd()-.5)*40}deg)`);});await wait(330);cards.forEach(el=>el.style.setProperty('--t',`translate(${(rnd()-.5)*6}px,${(rnd()-.5)*6}px) rotate(${(rnd()-.5)*8}deg)`));await wait(300);}
+  cards.forEach((el,k)=>{el.style.transitionDelay=reduce?'0s':(k*14)+'ms';el.style.setProperty('--t',ringT(k,0));el.dataset.placed='1';});
+  await wait(reduce?50:78*14+700);
+  cards.forEach(el=>{el.style.transitionDelay='0s';el.classList.add('ready');el.tabIndex=0;});
+  ring.classList.remove('still');phase='pick';
+  hint.innerHTML='Hãy nghĩ về câu hỏi, rồi chạm vào <b>3 lá</b> bạn muốn chọn.';
+}
+$('#shuffleBtn').addEventListener('click',startReading);
+$('#q').addEventListener('keydown',e=>{if(e.key==='Enter'&&(e.metaKey||e.ctrlKey)){e.preventDefault();startReading();}});
+
+ring.addEventListener('mouseover',e=>{const el=e.target.closest('.c.ready');if(el)el.style.setProperty('--t',ringT(+el.dataset.k,10));});
+ring.addEventListener('mouseout',e=>{const el=e.target.closest('.c.ready');if(el)el.style.setProperty('--t',ringT(+el.dataset.k,0));});
+ring.addEventListener('click',e=>{const el=e.target.closest('.c.ready');if(el&&phase==='pick')pick(el);});
+
+function ringAngle(){const m=getComputedStyle(ring).transform;if(!m||m==='none')return 0;const v=m.match(/matrix\(([^)]+)\)/);if(!v)return 0;const [a,b]=v[1].split(',').map(Number);return Math.atan2(b,a)*180/Math.PI;}
+function pick(el){
+  const k=picks.length;if(k>=3)return;
+  const ci=+el.dataset.ci,rev=rnd()<.33,card=DECK[ci];
+  picks.push({ci,rev});
+  const from=el.getBoundingClientRect(),angle=+el.dataset.k/78*360+ringAngle();
+  el.classList.remove('ready');el.classList.add('taken');el.tabIndex=-1;
+  const slot=slotsEl.children[k],well=slot.querySelector('.well');
+  well.innerHTML=`<div class="card3d"><div class="face back"></div><div class="face front${rev?' rev':''}">${cardSVG(card)}</div></div>`;
+  const to=well.getBoundingClientRect(),dx=(from.left+from.width/2)-(to.left+to.width/2),dy=(from.top+from.height/2)-(to.top+to.height/2),s=Math.min(from.width,from.height)/to.width;
+  const sc=Math.max(.15,(el.offsetWidth||to.width*.3)/to.width);
+  if(!reduce)well.firstChild.animate([{transform:`translate(${dx}px,${dy}px) rotate(${angle}deg) scale(${sc})`},{transform:'none'}],{duration:750,easing:'cubic-bezier(.3,.7,.2,1)'});
+  slot.querySelector('.nm').textContent='?';
+  if(picks.length<3)hint.innerHTML=`Đã chọn ${picks.length}/3. Chạm thêm <b>${3-picks.length} lá</b> nữa.`;
+  else breathe();
+}
+
+/* ---------- hít thở 10 giây ---------- */
+async function breathe(){
+  phase='breathe';ring.classList.add('still','dim');ring.querySelectorAll('.c').forEach(c=>{c.classList.remove('ready');c.tabIndex=-1;});
+  hint.innerHTML='Ba lá đã chọn. Hãy hít thở cùng quả cầu.';
+  await wait(reduce?100:800);
+  const altar=$('#altar'),br=$('#breath'),lab=$('#bLabel'),cnt=$('#bCount');
+  altar.classList.remove('breathe');void altar.offsetWidth;altar.classList.add('breathe');br.hidden=false;
+  const t0=performance.now();
+  await new Promise(done=>{(function tick(){const t=(performance.now()-t0)/1000;
+    lab.textContent=t<4?'Hít vào thật sâu':t<6?'Giữ hơi':'Thở ra chậm rãi';cnt.textContent=Math.max(0,Math.ceil(10-t))+' giây';
+    if(t>=10)return done();requestAnimationFrame(tick);})();});
+  lab.textContent='Lật bài';cnt.textContent='';
+  await wait(500);br.hidden=true;reveal();
+}
+async function reveal(){
+  phase='reveal';hint.textContent='';
+  for(let k=0;k<3;k++){const slot=slotsEl.children[k],p=picks[k],c=DECK[p.ci];
+    slot.querySelector('.card3d').classList.add('open');
+    await wait(reduce?150:520);
+    slot.querySelector('.nm').textContent=c.en;
+    slot.querySelector('.meta').innerHTML=`${esc(c.eg)} · ${p.rev?'<span class="r">ngược</span>':'xuôi'}`;
+    await wait(reduce?100:450);}
+  getReading();
+}
+
+/* ---------- lời luận ---------- */
+function mdRender(t,cursor){
+  const out=[];t.split(/\n+/).forEach(line=>{line=line.trim();if(!line)return;
+    const h=line.match(/^#{1,3}\s*(.+)$/);const fmt=s=>esc(s).replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/\*(.+?)\*/g,'<i>$1</i>');
+    out.push(h?`<h3>${fmt(h[1])}</h3>`:`<p>${fmt(line.replace(/^[-•]\s*/,''))}</p>`);});
+  let html=out.join('');if(cursor)html+=`<span class="cursor"></span>`;return html;}
+const TOPICS=[[/(yêu|tình|quan hệ|người ấy|crush|chồng|vợ|bạn trai|bạn gái|hẹn hò|chia tay|quay lại|kết hôn|cưới)/i,'chuyện tình cảm'],[/(việc|sếp|công ty|thăng|nghề|dự án|phỏng vấn|đồng nghiệp|học|thi|trường|luận văn|du học)/i,'công việc và học tập'],[/(tiền|tài chính|đầu tư|kinh doanh|lương|nợ|mua|bán|chứng khoán)/i,'chuyện tiền bạc'],[/(sức khỏe|bệnh|ngủ|mệt|ăn uống|tập)/i,'sức khỏe'],[/(gia đình|bố|mẹ|cha|con|anh|chị|em)/i,'chuyện gia đình']];
+function fallbackReading(){
+  const sp=SPREADS[spreadId];const topic=(TOPICS.find(([re])=>re.test(question))||[0,'điều bạn đang băn khoăn'])[1];
+  const low=s=>s.replace(/\.$/,'').replace(/^./,ch=>ch.toLowerCase());
+  const first=s=>low(s.split(',')[0]);
+  const intro={'Quá khứ':['Nhìn lại những gì đã qua trong ','Gốc rễ của '],'Hiện tại':['Ngay lúc này, trong ','Điều đang diễn ra trong '],'Tương lai':['Con đường phía trước của ','Nếu giữ hướng đi hiện tại, '],
+   'Tình huống':['Bức tranh hiện tại của ','Điều đang bao quanh '],'Thử thách':['Điều khó vượt qua nhất trong ','Nút thắt của '],'Lời khuyên':['Lời khuyên cho ','Điều bạn có thể làm với '],
+   'Bạn':['Về phía bạn trong ','Cảm xúc của bạn trong '],'Người ấy':['Về phía người kia trong ','Người ấy, trong '],'Mối quan hệ':['Sợi dây giữa hai người trong ','Mối quan hệ, xét trong '],
+   'Tâm trí':['Trong suy nghĩ của bạn về ','Tâm trí bạn quanh '],'Cơ thể':['Với cơ thể và nhịp sống hằng ngày quanh ','Thân thể bạn, trong '],'Tinh thần':['Ở tầng sâu nhất của ','Phần tinh thần trong ']};
+  let t='';picks.forEach((p,k)=>{const c=DECK[p.ci],pos=sp.pos[k],mean=p.rev?c.rv:c.up,pool=intro[pos]||[pos+' trong '];
+    t+=`## ${pos} · ${c.en}${p.rev?' (ngược)':''}\n${c.en}${p.rev?' khi nằm ngược':''} mang ý nghĩa ${low(mean)}. ${pool[(p.ci+k)%pool.length]}${topic}, lá này nhắc bạn để ý tới ${first(mean)}${c.a==='major'?'. Là một lá Ẩn Chính, nó mang sức nặng của một bài học lớn hơn chuyện trước mắt.':`. Lá thuộc nguyên tố ${low(c.e.split(':')[0])}, chạm tới ${c.e.split(':')[1].trim().split(',').slice(0,3).join(',')}.`}\n`;});
+  const majors=picks.filter(p=>DECK[p.ci].a==='major').length,revs=picks.filter(p=>p.rev).length;
+  const last=DECK[picks[2].ci],lastMean=picks[2].rev?last.rv:last.up;
+  t+=`## Lời sấm truyền\nMình hiểu khi đặt câu hỏi này, hẳn bạn đã nghĩ về nó khá nhiều. ${majors>=2?'Có tới '+majors+' lá Ẩn Chính, nên đây không chỉ là chuyện nhất thời mà là một bước ngoặt đáng để bạn nhìn lại nghiêm túc.':'Phần lớn là lá Ẩn Phụ, câu trả lời nằm trong những việc nhỏ hằng ngày mà bạn hoàn toàn làm được.'} ${revs>=2?'Nhiều lá ngược cho thấy có điều đang bị chặn lại, có lẽ cần nhìn nó từ một phía khác.':'Các lá phần nhiều xuôi chiều, dòng chảy đang thuận cho bạn.'} Hãy giữ lấy tinh thần của lá cuối, ${last.en}: ${low(lastMean)}. Một việc nhỏ trong vài ngày tới, dù chỉ là ghi ra điều bạn thật sự mong muốn, cũng đủ để bắt đầu.`;
+  return t;}
+async function getReading(){
+  const box=$('#readText'),src=$('#readSrc'),panel=$('#reading');panel.hidden=false;
+  src.textContent='Đang lắng nghe lời sấm truyền…';box.innerHTML='<p class="wait">Quả cầu đang soi ba lá bài của bạn…</p>';
+  panel.scrollIntoView({behavior:reduce?'auto':'smooth',block:'start'});
+  let txt='',ok=false,why='';
+  try{
+    if(location.protocol==='file:')throw {code:'offline'};
+    const ctl=new AbortController(),to=setTimeout(()=>ctl.abort(),45000);
+    const res=await fetch('/api/reading',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({question,spread:spreadId,cards:picks.map(p=>({i:p.ci,r:p.rev}))}),signal:ctl.signal});
+    if(res.status===429)throw {code:'rate'};
+    if(!res.ok||!res.body)throw {code:'fail'};
+    const reader=res.body.getReader(),dec=new TextDecoder();
+    src.textContent='Luận bởi AI cho riêng câu hỏi của bạn';
+    while(true){const {done,value}=await reader.read();if(done)break;txt+=dec.decode(value,{stream:true});box.innerHTML=mdRender(txt,true);}
+    clearTimeout(to);ok=txt.trim().length>40;if(!ok)why='fail';
+  }catch(e){why=(e&&e.code)||'fail';}
+  if(ok){box.innerHTML=mdRender(txt,false);phase='done';return;}
+  src.textContent='Bản luận rút gọn theo ý nghĩa từng lá';
+  const note=why==='rate'?'Bạn đã xem nhiều lần trong ít phút. Máy luận AI cần nghỉ một chút, đây là bản luận rút gọn.':why==='offline'?'Trang đang chạy ngoài máy chủ nên chưa gọi được AI. Đây là bản luận rút gọn.':'Máy luận AI đang bận. Đây là bản luận rút gọn dựa trên ý nghĩa từng lá.';
+  box.innerHTML=`<p class="fb">${esc(note)}</p>`+mdRender(fallbackReading(),false);phase='done';
+}
+$('#againBtn').addEventListener('click',()=>{$('#table').hidden=true;$('#ask').hidden=false;$('#q').value='';phase='idle';window.scrollTo({top:0,behavior:reduce?'auto':'smooth'});$('#q').focus();});
+$('#sameBtn').addEventListener('click',()=>{startReading();});
+})();
+</script>
+</body>
+</html>
